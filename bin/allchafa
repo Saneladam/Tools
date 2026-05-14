@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Thu 30. Apr 2026
+#
+# Purpose:      Run chafa for all images on curr dir
+# =============================================================================
+
+for image in ./*.png; do
+    echo $image
+    chafa $image
+    echo
+done

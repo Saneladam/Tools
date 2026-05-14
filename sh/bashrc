@@ -1,0 +1,62 @@
+# .bashrc
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# Prompt
+autoload -Uz colors && colors
+setopt prompt_subst
+# PROMPT='%F{red}%n@%m %F{blue}%~ %f⚛ '
+PS1='\[\e[38;5;39m\]\u@\[\e[38;5;208m\]\h\[\e[0m\] \[\e[38;5;70m\]\w\]\e[0m\]\$ '
+PS2='... '
+PS3='::: '
+PS4='+ ${BASH_SOURCE}:${LINENO}: '
+
+# Path
+export PATH="$HOME/Tools/bin:$PATH"
+export PATH="/usr/local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+# Python PATHS
+export PYTHONPATH="$HOME/Tools/python:$PYTHONPATH"
+
+# Sourcing files
+source ~/Tools/sh/alias
+source ~/Tools/sh/analysis
+source ~/Tools/sh/function
+source ~/Tools/sh/bash-bindings
+source ~/Tools/sh/laptop-tty
+source ~/.cargo/env
+
+# Eval apps
+eval "$(zoxide init bash)"
+
+# History
+HISTSIZE=1000000
+HISTFILESIZE=2000000
+HISTCONTROL=ignoreboth
+shopt -s histappend
+POMPT_COMMAND="history -a; history -n"
+
+clear
+
+###############################################################################
+# >>> mamba initialize >>>
+# !! Contents within this block are managed by 'micromamba shell init' !!
+export MAMBA_EXE='/home/r/.local/bin/micromamba';
+export MAMBA_ROOT_PREFIX='/home/r/micromamba';
+__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__mamba_setup"
+else
+    alias micromamba="$MAMBA_EXE"  # Fallback on help from micromamba activate
+fi
+unset __mamba_setup
+# <<< mamba initialize <<<
+# --- pyenv (MUST be early in PATH) ---
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+# eval "$(pyenv virtualenv-init -)"
+# eval "$(direnv hook zsh)"
+###############################################################################

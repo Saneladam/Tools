@@ -1,0 +1,44 @@
+# Functionality
+alias sourcez='source ~/.zshrc'
+alias sourceb='source ~/.bashrc'
+alias watch_sq='watch "squeue -u romguil"'
+alias watch_ps='watch "ps auc"'
+
+# Improvement
+alias ls='ls --color=auto'
+alias la='ls -a --color=auto'
+alias ll='ls -lha --color=auto'
+alias grep='grep --color=auto'
+alias diff='diff --color=auto'
+alias cd='z'
+alias c='clear'
+
+# Vim open
+alias vim='nvim'
+alias zvim='vim ~/.zshrc'
+alias zavim='vim ~/.zsh_alias'
+alias zfvim='vim ~/.zsh_functions'
+alias vvim='nvim ~/.config/nvim/init.lua'
+
+# Directories
+alias setwork='pwd > ~/.workdir'
+alias gowork='cd $(cat ~/.workdir)'
+alias .2='../..'
+alias .3='../../..'
+alias .4='../../../..'
+alias .5='../../../../..'
+
+#########################################
+
+alias myip="curl -s http://ifconfig.me"
+alias ports='sudo netstat -tulanp'
+
+alias py='python3'
+alias python='python3'
+alias activate='source ./.venv/bin/activate'
+alias open='xdg-open'
+
+# Tmux
+alias ta='tmux attachy'
+alias tls='tmux ls'
+alias librewolf='flatpak run io.gitlab.librewolf-community'

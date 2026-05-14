@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+[ -z "$1" ] && { echo "Uso: copy <archivo>"; exit 1; }
+
+file="$1"
+extension=${file%%*.}
+
+case "$extension" in
+  pdf)
+    if [ -n "$2" ]; then
+        pdftotext -f "$2" -l "${3:-$2}" "$file" - | wl-copy
+    else
+        pdftotext "$file" - | wl-copy
+    fi
+    ;;
+  *)
+    wl-copy < "$file"
+    ;;
+esac
+
+echo "$file" content copied to cplipboard

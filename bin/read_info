@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+
+#
+# Created by: Roman
+# On the 13/05/2026
+#
+
+battery=$( cat /sys/class/power_supply/BAT0/capacity 2>/dev/null )
+date=$( date )
+
+echo "#  $date  :  $battery %"

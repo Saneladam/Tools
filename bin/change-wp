@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Wed 13 May 2026
+#
+# Purpose:      Cycle wallpapers
+# =============================================================================
+
+wallpaper_dir="$HOME/Pictures/Wallpapers"
+current_link="$wallpaper_dir/current"
+
+# Obtener lista ordenada
+wallpapers=$(find "$wallpaper_dir" -maxdepth 1 -type f | sort)
+
+# Resolver wallpaper actual
+current=$(readlink -f "$current_link")
+
+found=0
+next=""
+
+for wp in $wallpapers; do
+    if [ "$found" = "1" ]; then
+        next="$wp"
+        break
+    fi
+
+    [ "$wp" = "$current" ] && found=1
+done
+
+# Si no encontró siguiente -> volver al primero
+if [ -z "$next" ]; then
+    next=$(printf "%s\n" "$wallpapers" | head -n 1)
+fi
+
+# Actualizar symlink
+ln -sf "$next" "$current_link"
+
+# Cambiar wallpaper (sway)
+swaymsg output "*" bg "$next" fill

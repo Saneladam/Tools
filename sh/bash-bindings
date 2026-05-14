@@ -1,0 +1,4 @@
+set editing-mode vi
+
+bind '"\C-r": reverse-search-history'
+bind '"\C-l": clear-screen'

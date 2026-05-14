@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Thu 30. Apr 2026
+#
+# Purpose:      Adds the TEMPLATE to the directory
+# =============================================================================
+
+TEMPLATES_DIR="$HOME/Templates"
+
+[ -z "$1" ] && { echo "Uso: build <template>"; exit 1; }
+
+template="$1"
+dest="${2:-$template}"
+
+src=$(find "$TEMPLATES_DIR" -maxdepth 1 -iname "${template}_TEMPLATE" -o -iname "$template.*" | head -n1)
+
+[ -z "$src" ] && { echo "Template no encontrado"; exit 1; }
+
+cp -r "$src" "$dest"
+echo "Builded: $dest"

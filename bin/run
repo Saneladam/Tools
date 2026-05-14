@@ -1,0 +1,142 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Fri 01. May 2026
+#
+# Purpose:      Jobscript wrapper night runner
+# =============================================================================
+
+LOGDIR="$HOME/Logs/JOBS"
+QUEUE="$LOGDIR/queue"
+
+MAIL_TO="romangarciaguill@gmail.com"
+MAIL=0
+NOTIFY=0
+NICE_LEVEL=10
+
+# ---------------------------
+# parse flags
+# ---------------------------
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -m)
+      MAIL=1
+      shift
+      [[ "$1" != -* && -n "$1" ]] && { MAIL_TO="$1"; shift; }
+      ;;
+    -l)
+      shift
+      [[ "$1" != -* && -n "$1" ]] && { LOGDIR="$1"; shift; } || LOGDIR="."
+      ;;
+    -n)
+      NOTIFY=1
+      shift
+      ;;
+    -nice)
+      shift
+      NICE_LEVEL="${1:-10}"
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+CMD="$*"
+[ -z "$CMD" ] && { echo "Usage: run [-m [mail]] [-l [dir]] [-n] [-nice N] -- cmd"; exit 1; }
+
+mkdir -p "$LOGDIR"
+touch "$QUEUE"
+
+# ---------------------------
+# metadata
+# ---------------------------
+TS=$(date +"%Y%m%d_%H%M%S")
+NAME=$(echo "$CMD" | awk '{print $1}' | tr -cd '[:alnum:]_')
+LOGFILE="$LOGDIR/${TS}_${NAME}.log"
+JOB_ID="${TS}_${NAME}"
+
+# ---------------------------
+# register queue
+# ---------------------------
+echo "$JOB_ID|queued|$CMD" >> "$QUEUE"
+
+[ "$NOTIFY" -eq 1 ] && notify-send "Job started" "$CMD"
+
+# ---------------------------
+# background worker
+# ---------------------------
+(
+  PID=$BASHPID
+
+  # ---- header ----
+  {
+    echo "=================================================="
+    echo "JOB_ID : $JOB_ID"
+    echo "PID    : $PID"
+    echo "CMD    : $CMD"
+    echo "START  : $(date)"
+    echo "=================================================="
+    echo
+  } > "$LOGFILE"
+
+  # update queue → running
+  sed -i "s|$JOB_ID|$JOB_ID|running|g" "$QUEUE" 2>/dev/null || true
+
+  START_TIME=$(date +%s)
+
+  # ---- execution (REALTIME OUTPUT) ----
+  stdbuf -oL -eL \
+  systemd-inhibit --what=sleep --why="Night job" \
+  nice -n "$NICE_LEVEL" \
+  bash -c "$CMD" 2>&1 | stdbuf -oL -eL tee -a "$LOGFILE"
+
+  STATUS=${PIPESTATUS[0]}
+
+  END_TIME=$(date +%s)
+  RUNTIME=$((END_TIME - START_TIME))
+
+  # ---- footer ----
+  {
+    echo
+    echo "--------------------------------------------------"
+    echo "EXIT    : $STATUS"
+    echo "END     : $(date)"
+    echo "RUNTIME : ${RUNTIME}s"
+    echo "=================================================="
+  } >> "$LOGFILE"
+
+  # ---- queue cleanup ----
+  sed -i "/$JOB_ID/d" "$QUEUE"
+
+  # ---- summary ----
+  RESULT=$([ $STATUS -eq 0 ] && echo "SUCCESS" || echo "FAIL($STATUS)")
+
+  BODY="Command: $CMD
+Result: $RESULT
+Runtime: ${RUNTIME}s
+Log: $LOGFILE"
+
+  # ---- notify ----
+  [ "$NOTIFY" -eq 1 ] && notify-send "Job finished" "$BODY"
+
+  # ---- mail (simple) ----
+  if [ "$MAIL" -eq 1 ]; then
+    echo "$BODY" | mail -s "Job finished: $RESULT" "$MAIL_TO"
+  fi
+
+) &
+
+BGPID=$!
+disown "$BGPID"
+
+echo "Started job $JOB_ID (PID $BGPID)"
+echo "Log: $LOGFILE"
+echo "Follow: tail -f $LOGFILE"

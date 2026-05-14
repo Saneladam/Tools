@@ -1,0 +1,92 @@
+# Functionality
+function extract() {
+  if [ -f $1 ]; then
+    case $1 in
+      *.tar.bz2)   tar xjf $1     ;;
+      *.tar.gz)    tar xzf $1     ;;
+      *.tar.xz)    tar xJf $1     ;;
+      *.bz2)       bunzip2 $1     ;;
+      *.rar)       unrar e $1     ;;
+      *.gz)        gunzip $1      ;;
+      *.tar)       tar xf $1      ;;
+      *.tbz2)      tar xjf $1     ;;
+      *.tgz)       tar xzf $1     ;;
+      *.zip)       unzip $1       ;;
+      *.Z)         uncompress $1  ;;
+      *.7z)        7z x $1        ;;
+      *)           echo "'$1' cannot be extracted via extract" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
+# Connectivity
+function mailme() {
+  local subject="AUTOMAIL: $1"
+  local body="$2"
+  echo "$body" | mail -s "$subject" romangarciaguill@gmail.com
+}
+function git_acp() {
+    echo ""
+    echo "Git add-commit-push in $(pwd)"
+    echo "---------------------------------------------------"
+    ls
+    echo "---------------------------------------------------"
+    git add .
+    if [ -z $1 ]; then
+        git commit -m "$(date)"
+    else;
+        git commit -m "$(echo $1)"
+    fi
+    git push
+    echo "---------------------------------------------------"
+    echo "All done sir :)"
+    echo ""
+}
+function define() {
+	local word=$1
+	curl dict.org/d:$word
+}
+
+# Hardware
+function camera() {
+	mpv av://v4l2:/dev/video0 --profile=low-latency --untimed
+}
+
+# Directory
+function showstorage() {
+	du -sh
+	echo "--------------------------"
+	du -sh * | sort -h | tail -20
+}
+function mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+function mkcp() {
+    local name="$1"
+    mkdir -p "$name"
+    for f in *"$name"*; do
+       [[ "$f" == "$name" ]] && continue
+       cp -r "$f" "$name"
+    done
+}
+function mkmv() {
+    local name="$1"
+    mkdir -p "$name"
+    for f in *"$name"*; do
+       [[ "$f" == "$name" ]] && continue
+       mv -r "$f" "$name"
+    done
+}
+
+# Gnuplots
+function qprofiles() {
+    gnuplot << 'TEMPLATE'
+@qprofiles
+TITLE="JointPlot"
+@save_as
+TEMPLATE
+}
+
+
