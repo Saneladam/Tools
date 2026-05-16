@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Fri 15. May 2026
+#
+# Purpose:      Git pulls all the repos and synthes all the necessary. 
+# =============================================================================
+
+REPOS=(
+    "$HOME/Codes"
+    "$HOME/Documents/MasterThesis"
+    "$HOME/Exercices"
+    "$HOME/Notes"
+    "$HOME/Tools"
+    # "$HOME/Music"
+    # "$HOME/Resources"
+)
+
+echo "STARTITG git pull"
+for repo in "${REPOS[@]}"; do
+    cd $repo
+    git pull origin main
+    echo "$repo was pulled"
+done
+echo "COMPLETED git pull"

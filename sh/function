@@ -27,6 +27,7 @@ function mailme() {
   local body="$2"
   echo "$body" | mail -s "$subject" romangarciaguill@gmail.com
 }
+
 function git_acp() {
     echo ""
     echo "Git add-commit-push in $(pwd)"
@@ -36,7 +37,7 @@ function git_acp() {
     git add .
     if [ -z $1 ]; then
         git commit -m "$(date)"
-    else;
+    else
         git commit -m "$(echo $1)"
     fi
     git push
@@ -44,6 +45,7 @@ function git_acp() {
     echo "All done sir :)"
     echo ""
 }
+
 function define() {
 	local word=$1
 	curl dict.org/d:$word

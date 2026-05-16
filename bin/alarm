@@ -8,7 +8,8 @@
 # Purpose:      Sets a timer and alarm
 # =============================================================================
 
-NOTIFICATION=False
+NOTIFICATION=True
+BEEP=True
 
 import sys
 import time
@@ -37,6 +38,17 @@ def notify(title, message):
         subprocess.run(["notify-send", title, message])
     except Exception:
         pass
+def beep():
+    try:
+        subprocess.run(["beep"])
+    except Exception:
+        pass
+def activate():
+    try:
+        subprocess.run(["sudo modprobe pcspkr"])
+    except Exception:
+        pass
+
 
 # ---------------------------
 # non-blocking key read
@@ -136,6 +148,7 @@ def parse_time():
 # main loop
 # ---------------------------
 def main():
+    if BEEP: activate()
     total_time = parse_time()
     if NOTIFICATION: notify("Alarm started", f"Timer for {fmt(total_time)}")
 
@@ -177,6 +190,7 @@ def main():
 
         print("\n[INFO] Time completed")
         if NOTIFICATION: notify("Alarm finished", "{fmt(total_time)} completed")
+        if BEEP: beep()
 
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Fri 15. May 2026
+#
+# Purpose:      Git pulls all the repos and synthes all the necessary. 
+# =============================================================================
+
+REPOS=(
+    "$HOME/Codes"
+    "$HOME/Documents/MasterThesis"
+    "$HOME/Exercices"
+    "$HOME/Notes"
+    "$HOME/Tools"
+    # "$HOME/Music"
+    # "$HOME/Resources"
+)
+
+echo "STARTING git push"
+for repo in "${REPOS[@]}"; do
+    cd $repo
+    git add .
+    git commit -m "Automatic commit"
+    git push
+    echo "-->$repo was pushed"
+done
+echo "COMPLETED"

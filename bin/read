@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Fri 15. May 2026
+#
+# Purpose:      Pipelines the pdf to a text in less 
+# =============================================================================
+
+
+pdftotext $1 - | less -S
