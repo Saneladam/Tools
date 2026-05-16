@@ -8,5 +8,23 @@
 # Purpose:      Pipelines the pdf to a text in less 
 # =============================================================================
 
+if [ $# -lt 1 ]; then
+    echo "Use: $0 file.pdf"
+    exit 1
+fi
 
-pdftotext $1 - | less -S
+if [ ! -f "$1" ]; then
+    echo "File not found: $1"
+    exit 1
+fi
+
+command -v pdftotext >/dev/null || {
+    echo "pdftotext not installed"
+    exit 1
+}
+
+if [ -t 0 ]; then
+    pdftotext "$1" - | less -S
+else
+    pdftotext - - | less -S
+fi
