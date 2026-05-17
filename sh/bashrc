@@ -25,7 +25,6 @@ source ~/Tools/sh/function
 source ~/Tools/sh/laptop-tty
 source ~/.cargo/env
 
-
 # Eval apps
 eval "$(zoxide init bash)"
 
