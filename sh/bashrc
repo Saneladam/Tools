@@ -23,10 +23,7 @@ source ~/Tools/sh/analysis
 source ~/Tools/sh/bash-bindings
 source ~/Tools/sh/function
 source ~/Tools/sh/laptop-tty
-source ~/.cargo/env
-
-# Eval apps
-eval "$(zoxide init bash)"
+[ -f ~/.cargo/env ] && source ~/.cargo/env
 
 # History
 HISTSIZE=1000000
@@ -58,3 +55,6 @@ eval "$(pyenv init -)"
 # eval "$(pyenv virtualenv-init -)"
 # eval "$(direnv hook zsh)"
 ###############################################################################
+
+# Eval apps
+eval "$(zoxide init bash)"

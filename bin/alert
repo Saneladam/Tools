@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+msg="${1:-Done}"
+
+notify-send "$msg"
+
+paplay /usr/share/sounds/freedesktop/stereo/complete.oga

@@ -189,7 +189,7 @@ def main():
             time.sleep(0.1)
 
         print("\n[INFO] Time completed")
-        if NOTIFICATION: notify("Alarm finished", "{fmt(total_time)} completed")
+        if NOTIFICATION: notify("Alarm finished",f"{total_time} completed")
         if BEEP: beep()
 
     finally:
