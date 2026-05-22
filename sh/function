@@ -91,4 +91,13 @@ TITLE="JointPlot"
 TEMPLATE
 }
 
-
+# Curl
+function cheat() {
+    curl cheat.sh/$1
+}
+function gif() {
+    curl gif.xyzzy.run/$1
+}
+function ducks() {
+    curl -sL https://raw.githubusercontent.com/gsobell/duckpond/home/duckpond.sh | bash
+}
