@@ -101,3 +101,17 @@ function gif() {
 function ducks() {
     curl -sL https://raw.githubusercontent.com/gsobell/duckpond/home/duckpond.sh | bash
 }
+function w3ms() {
+    w3m "duckduckgo.com"
+}
+function w3mf() {
+    w3m "https://duckduckgo.com/html/?q=$*"
+}
+
+function wiki() {
+    wiki-tui $1
+}
+
+function science() {
+    ~/Tools/tmux/workspace_Science
+}

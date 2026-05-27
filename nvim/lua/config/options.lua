@@ -58,4 +58,4 @@ opt.guicursor = "n-v-c:block,i:ver25"
 vim.g.mapleader = "\\"
 
 opt.background = "dark"
-vim.cmd.colorscheme("zaibatsu")
+vim.cmd.colorscheme("sorbet")

@@ -5,7 +5,8 @@
 
 # Prompt
 # PROMPT='%F{red}%n@%m %F{blue}%~ %f⚛ '
-PS1='\[\e[38;5;39m\]\u@\[\e[38;5;208m\]\h\[\e[0m\] \[\e[38;5;70m\]\w\]\e[0m\]\$ '
+# PS1='\[\e[1;31m\]\u\[\e[0m\]\[\e[1;35m\]⚛\[\e[0m\]\[\e[1;34m\]\h\[\e[0m\] \[\e[38;5;70m\]\w\]\e[0m\]\$ '
+PS1='\[\e[1;31m\]\u\[\e[0m\]\[\e[1;37m\]⚛\[\e[0m\]\[\e[1;34m\]\h\[\e[0m\] \[\e[38;5;70m\]\w\]\e[0m\]\$ '
 PS2='... '
 PS3='::: '
 PS4='+ ${BASH_SOURCE}:${LINENO}: '
@@ -22,7 +23,6 @@ source ~/Tools/sh/alias
 source ~/Tools/sh/analysis
 source ~/Tools/sh/bash-bindings
 source ~/Tools/sh/function
-source ~/Tools/sh/laptop-tty
 [ -f ~/.cargo/env ] && source ~/.cargo/env
 
 # History
@@ -58,3 +58,5 @@ eval "$(pyenv init -)"
 
 # Eval apps
 eval "$(zoxide init bash)"
+
+. "$HOME/.cargo/env"
