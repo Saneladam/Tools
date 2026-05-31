@@ -1,0 +1,899 @@
+Resume created on: Fri May 29 18:24:56 CEST 2026 over /home/akash/.config/nvim:
+================
+.
+├── init.lua
+├── lazy-lock.json
+├── lua
+│   ├── config
+│   │   ├── autocmds.lua
+│   │   ├── keymaps.lua
+│   │   ├── lazy.lua
+│   │   ├── options.lua
+│   │   └── terminal.lua
+│   ├── plugins
+│   │   ├── ai.lua
+│   │   ├── completition.lua
+│   │   ├── git.lua
+│   │   ├── interactive.lua
+│   │   ├── lsp.lua
+│   │   ├── snippets.lua
+│   │   ├── telescope.lua
+│   │   ├── treesitter.lua
+│   │   ├── typst.lua
+│   │   ├── ui.lua
+│   │   └── writing.lua
+│   └── snippets
+│       ├── python.lua
+│       ├── sh.lua
+│       └── typst.lua
+└── resume.txt
+
+5 directories, 22 files
+================
+
+./init.lua
+----------------
+
+require("config.options")
+require("config.keymaps")
+require("config.autocmds")
+require("config.terminal")
+
+require("config.lazy")
+
+vim.cmd[[colorscheme tokyonight-night]]
+
+
+
+./lua/plugins/completition.lua
+----------------
+return {
+
+    {
+        "hrsh7th/nvim-cmp",
+
+        dependencies = {
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-path",
+            "L3MON4D3/LuaSnip",
+            "saadparwaiz1/cmp_luasnip",
+        },
+
+        config = function()
+
+            local cmp = require("cmp")
+
+            cmp.setup({
+
+                snippet = {
+                    expand = function(args)
+                        require("luasnip").lsp_expand(args.body)
+                    end,
+                },
+
+                mapping = cmp.mapping.preset.insert({
+                    ["<Tab>"] = cmp.mapping.confirm({ select = true }),
+                    ["<C-j>"] = cmp.mapping.select_next_item(),
+                    ["<C-k>"] = cmp.mapping.select_prev_item(),
+                }),
+
+                sources = {
+                    { name = "nvim_lsp" },
+                    { name = "buffer" },
+                    { name = "path" },
+                    { name = "luasnip" },
+                },
+            })
+        end,
+    },
+}
+
+
+
+./lua/plugins/snippets.lua
+----------------
+return {
+    {
+        "L3MON4D3/LuaSnip",
+
+        dependencies = {
+            "rafamadriz/friendly-snippets",
+        },
+
+        config = function()
+            local ls = require("luasnip")
+            -- ============================================================
+            -- KEYMAPS
+            -- ============================================================
+            vim.keymap.set({ "i", "s" }, "<A-k>", function()
+                if ls.expand_or_jumpable() then
+                    ls.expand_or_jump()
+                end
+            end, { silent = true })
+
+            vim.keymap.set({ "i", "s" }, "<A-j>", function()
+                if ls.jumpable(-1) then
+                    ls.jump(-1)
+                end
+            end, { silent = true })
+            -- ============================================================
+            -- LOAD LUA SNIPPETS
+            -- ============================================================
+            require("luasnip.loaders.from_lua").load({
+                paths = vim.fn.stdpath("config") .. "/lua/snippets",
+            })
+            -- ============================================================
+            -- TEST SNIPPET
+            -- ============================================================
+            local s = ls.snippet
+            local t = ls.text_node
+            ls.add_snippets("all", {
+                s("sign", {
+                    t("Román García Guill"),
+                }),
+            })
+            -- ============================================================
+            -- DEBUG COMMAND
+            -- ============================================================
+            vim.api.nvim_create_user_command("ListSnippets", function()
+                local ft = vim.bo.filetype
+                local snippets = ls.get_snippets(ft)
+
+                if not snippets then
+                    print("No snippets for " .. ft)
+                    return
+                end
+
+                print("Snippets for " .. ft .. ":")
+
+                for _, snippet in ipairs(snippets) do
+                    print("  " .. snippet.trigger)
+                end
+            end, {})
+        end,
+    },
+}
+
+
+
+./lua/plugins/lsp.lua
+----------------
+return {
+    "neovim/nvim-lspconfig",
+    dependencies = {
+        "williamboman/mason.nvim",
+        "williamboman/mason-lspconfig.nvim",
+    },
+
+    config = function()
+        require("mason").setup()
+
+        require("mason-lspconfig").setup({
+            ensure_installed = {
+                "lua_ls",
+                "pyright",
+                "clangd",
+                "texlab",
+                "marksman",
+                "bashls",
+            },
+        })
+
+        -- NUEVO flujo: setup explícito por servidor
+        local servers = {
+            lua_ls = {},
+            pyright = {},
+            clangd = {},
+            texlab = {},
+            marksman = {},
+            bashls = {},
+        }
+
+        for name, cfg in pairs(servers) do
+            vim.lsp.config(name, cfg)
+            vim.lsp.enable(name)
+        end
+    end,
+}
+
+
+
+./lua/plugins/treesitter.lua
+----------------
+return {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    -- lazy = false,
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+        require("nvim-treesitter.configs").setup({
+            ensure_installed = {
+                "lua",
+                "python",
+                "bash",
+                "c",
+                "cpp",
+            },
+            highlight = { enable = true },
+            indent = { enable = true },
+        })
+    end,
+}
+
+
+
+./lua/plugins/ui.lua
+----------------
+return {
+    {
+        "nvim-neo-tree/neo-tree.nvim",
+        branch = "v3.x",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-tree/nvim-web-devicons",
+            "MunifTanjim/nui.nvim",
+        },
+        config = function()
+            require("neo-tree").setup({
+                filesystem = {
+                    follow_current_file = true,
+                    hijack_netrw_behavior = "open_default",
+                },
+                window = {
+                    width = 28,
+                },
+            })
+
+            vim.keymap.set("n", "<C-n>", ":Neotree toggle<CR>", { silent = true })
+        end,
+    },
+    {
+      "nvim-lualine/lualine.nvim",
+      opts = {
+        options = {
+          theme = "auto",
+          section_separators = "",
+          component_separators = "",
+        }
+      }
+    },
+    {
+      "folke/tokyonight.nvim",
+      lazy = false,
+      priority = 1000,
+      opts = {},
+    },
+    {
+        "goolord/alpha-nvim",
+
+        dependencies = {
+            "nvim-tree/nvim-web-devicons",
+        },
+
+        config = function()
+
+            local alpha = require("alpha")
+            local dashboard = require("alpha.themes.dashboard")
+
+            dashboard.section.header.val = {
+                [[             *     *              ]],
+                [[        *                *        ]],
+                [[            *  _|_  *             ]],
+                [[       *    .-' * '-. *           ]],
+                [[   *       /         \      *     ]],
+                [[        *  ^^^^^|^^^^^         *  ]],
+                [[    *       .~. |  .~.      *     ]],
+                [[  *        / ^ \| / ^ \           ]],
+                [[       *  (|   |J/|   |)  *    *  ]],
+                [[          '\   /`"\   /`          ]],
+                [[-- '' -'-'  ^`^    ^`^  -- '' -'-']],
+            }
+
+            dashboard.section.buttons.val = {
+                dashboard.button("n", "   New file", ":ene <CR>"),
+                dashboard.button("f", "   Find file", ":Telescope find_files<CR>"),
+                dashboard.button("q", "   Quit", ":qa<CR>"),
+            }
+
+            alpha.setup(dashboard.opts)
+        end,
+    },
+
+    -- En ./plugins/ui.lua
+    {
+        "MeanderingProgrammer/render-markdown.nvim",
+        opts = {
+            latex = {
+                enabled = true,
+                -- Si no deseas instalar utilidades externas de renderizado de latex, 
+                -- puedes dejarlo en false para evitar el warning de 'utftex'.
+            },
+            html = {
+                enabled = false, -- Desactiva si no trabajas con documentación web
+            },
+        },
+    },
+}
+
+
+
+./lua/plugins/typst.lua
+----------------
+return {
+    {
+        "chomosuke/typst-preview.nvim",
+            ft = "typst",
+
+            config = function()
+                require("typst-preview").setup({
+                        open_on_start = false,
+                        })
+
+            vim.keymap.set(
+                    "n",
+                    "<leader>lw",
+                    "<cmd>silent !typst watch % &<CR>"
+                    )
+            vim.keymap.set(
+                    "n",
+                    "<leader>ll",
+                    "<cmd>TypstPreviewToggle<CR>"
+                    )
+            end,
+    },
+}
+
+
+
+./lua/plugins/ai.lua
+----------------
+return {
+
+}
+
+
+
+./lua/plugins/writing.lua
+----------------
+return {
+    {
+      "folke/flash.nvim",
+    },
+    {
+        "lukas-reineke/indent-blankline.nvim",
+        main = "ibl",
+        opts = {},
+    },
+    {
+        "junegunn/goyo.vim",
+    },
+}
+
+
+
+./lua/plugins/telescope.lua
+----------------
+return {
+    {
+        "nvim-telescope/telescope.nvim",
+
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        },
+
+        config = function()
+            local telescope = require("telescope")
+            local builtin = require("telescope.builtin")
+
+            telescope.setup({
+                defaults = {
+                    layout_strategy = "flex",
+                    sorting_strategy = "ascending",
+
+                    layout_config = {
+                        prompt_position = "top",
+                    },
+                },
+            })
+
+            vim.keymap.set("n", "<leader>ff", builtin.find_files)
+            vim.keymap.set("n", "<leader>fg", builtin.live_grep)
+            vim.keymap.set("n", "<leader>fb", builtin.buffers)
+            vim.keymap.set("n", "<leader>fh", builtin.help_tags)
+        end,
+    },
+}
+
+
+
+./lua/plugins/git.lua
+----------------
+return {
+    {
+        "lewis6991/gitsigns.nvim",
+        config = function()
+            require("gitsigns").setup({
+                signs = {
+                    add = { text = "+" },
+                    change = { text = "~" },
+                    delete = { text = "_" },
+                },
+            })
+        end,
+    },
+}
+
+
+
+./lua/plugins/interactive.lua
+----------------
+return {
+    {
+        'Vigemus/iron.nvim',
+        config = function()
+            local iron = require("iron.core")
+            -- Aquí va la configuración que pegaste del README
+        end
+    },
+}
+
+
+
+./lua/snippets/sh.lua
+----------------
+local ls = require("luasnip")
+local s = ls.snippet
+local t = ls.text_node
+local i = ls.insert_node
+
+local c = ls.choice_node
+local f = ls.function_node
+local d = ls.dynamic_node
+
+local extras = require("luasnip.extras")
+local fmt = require("luasnip.extras.fmt").fmt
+local rep = extras.rep
+
+
+return {
+  -- Snippet original: snippet b "Python block"
+  s("b", {
+    t("# %% "),
+    i(0)
+  }, {
+    description = "Bash block separator"
+  }),
+  --
+}
+
+
+
+./lua/snippets/typst.lua
+----------------
+local ls = require("luasnip")
+local s = ls.snippet
+local t = ls.text_node
+local i = ls.insert_node
+local fmt = require("luasnip.extras.fmt").fmt
+local extras = require("luasnip.extras.fmt").extras
+
+return {
+    -- Simple Figure
+    s("figure", fmt([[
+    #figure(
+        image("figures/{}",
+        width: {}%),
+        caption: [{}],
+        placement: {}
+    ) <{}>
+    ]], {
+        i(1, "ruta_imagen.png"),
+        i(2, "80"),
+        i(3, "Caption de la figura"),
+        i(4, "auto"),
+        i(5, "fig_label"),
+    }), {
+        description = "Typst simple figure"
+    }),
+
+    -- Compose Figure
+    s("subfigure", fmt([[
+    #subpar.grid(
+        figure(
+            image("figures/{}",
+            width: {}%),
+            caption: [{}],
+        ) <{}>,
+
+        figure(
+            image("figures/{}",
+            width: {}%),
+            caption: [{}],
+        ) <{}>,
+
+        columns: (1fr, 1fr),
+        placement: {},
+        caption: [{}],
+        label: <{}>
+    )
+    ]], {
+        -- Primera figura
+        i(1, "img1.png"),
+        i(2, "100"),
+        i(3, "Caption 1"),
+        i(4, "label1"),
+
+        -- Segunda figura
+        i(5, "img2.png"),
+        i(6, "100"),
+        i(7, "Caption 2"),
+        i(8, "label2"),
+
+        -- Global
+        i(9, "auto"),
+        i(10, "Caption general"),
+        i(11, "fig_global"),
+    }), {
+        description = "Typst composed figure (2 columns)"
+    }),
+}
+
+
+
+./lua/config/keymaps.lua
+----------------
+local map = vim.keymap.set
+
+map("n", "Q", "@q")
+
+map("x", "p", "pgvy")
+
+map("i", "jk", "<Esc>")
+map("i", "JK", "<Esc>")
+
+map("n", ";", ":")
+map("v", ";", ":")
+
+map("n", "-", "/")
+map("v", "-", "/")
+
+map("n", "L", "$")
+map("n", "H", "^")
+
+map("n", "<C-h>", "<C-w>h")
+map("n", "<C-j>", "<C-w>j")
+map("n", "<C-k>", "<C-w>k")
+map("n", "<C-l>", "<C-w>l")
+
+map("n", "<leader>t", "<cmd>tabnew<CR>")
+map("n", "<leader>c", "<cmd>tabclose<CR>")
+map("n", "<leader>[", "<cmd>tabprev<CR>")
+map("n", "<leader>]", "<cmd>tabnext<CR>")
+
+map("n", "<leader>v", "<cmd>vsplit<CR>")
+map("n", "<leader>s", "<cmd>split<CR>")
+
+map("n", "<F1>", vim.diagnostic.open_float)
+
+map("n", "<F2>", function()
+    vim.opt.number = not vim.opt.number:get()
+    vim.opt.relativenumber = not vim.opt.relativenumber:get()
+end)
+
+map("n", "<F3>", function()
+    vim.opt.relativenumber = not vim.opt.relativenumber:get()
+end)
+
+map("n", "<F6>", function()
+    vim.opt.spell = not vim.opt.spell:get()
+    vim.opt.spelllang = "en_us"
+end)
+
+map("n", "<F7>", function()
+    vim.opt.spelllang = "es"
+end)
+
+
+
+./lua/config/autocmds.lua
+----------------
+local autocmd = vim.api.nvim_create_autocmd
+local augroup = vim.api.nvim_create_augroup
+
+autocmd("BufWritePost", {
+    pattern = "*.py",
+    callback = function()
+        -- black %
+        vim.cmd("silent !black %")
+    end,
+})
+autocmd("BufWritePost", {
+    pattern = "*.sh",
+    callback = function()
+        -- shellcheck %
+        vim.cmd("silent !shellcheck %")
+    end,
+})
+
+-- ============================================================================
+-- AUTOREAD
+-- ============================================================================
+autocmd({ "FocusGained", "BufEnter" }, {
+    pattern = "*",
+    command = "checktime",
+})
+
+-- ============================================================================
+-- RESUME CURSOR POSITION
+-- ============================================================================
+local resume_group = augroup("ResumeCursor", { clear = true })
+autocmd("BufReadPost", {
+    group = resume_group,
+    pattern = "*",
+    callback = function()
+        local line = vim.fn.line([['"]])
+        if line > 1 and line <= vim.fn.line("$") then
+            vim.cmd([[normal! g`"]])
+        end
+    end,
+})
+
+-- ============================================================================
+-- NOTEBOOK STYLE CELL HIGHLIGHT (# %%)
+-- ============================================================================
+local cell_group = augroup("NotebookCells", { clear = true })
+
+autocmd("FileType", {
+    group = cell_group,
+    pattern = { "python", "sh", "bash" },
+    callback = function()
+
+        vim.cmd([[
+            syntax match NotebookCell "^# %%.*$"
+        ]])
+
+        vim.api.nvim_set_hl(0, "NotebookCell", {
+            fg = "#ffffff",
+            bg = "#7a3fc7",
+            bold = true,
+        })
+    end,
+})
+
+-- ============================================================================
+-- PYTHON HEADER
+-- ============================================================================
+local python_group = augroup("AutoHeaderPy", { clear = true })
+autocmd("BufNewFile", {
+    group = python_group,
+    pattern = "*.py",
+    callback = function()
+        local filename = vim.fn.expand("%:t")
+        -- Evitar test_*.py
+        if filename:match("^test_.*%.py$") then
+            return
+        end
+        local date = os.date("%a %d. %b %Y")
+        local lines = {
+            "#!/usr/bin/env python3",
+            "",
+            "# =============================================================================",
+            "# Authors:      Román García Guill",
+            "# Contact:      romangarciaguill@gmail.com",
+            "# Created:      " .. date,
+            "#",
+            "# Purpose:       ",
+            "# =============================================================================",
+            "",
+            "def main() -> None:",
+            "    pass",
+            "",
+            'if __name__ == "__main__":',
+            "    main()",
+        }
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+        -- Posición cursor
+        vim.api.nvim_win_set_cursor(0, { 8, 18 })
+    end,
+})
+
+-- ============================================================================
+-- PYTHON TEST HEADER
+-- ============================================================================
+local pytest_group = augroup("AutoHeaderTestPy", { clear = true })
+autocmd("BufNewFile", {
+    group = pytest_group,
+    pattern = "test_*.py",
+    callback = function()
+        local date = os.date("%a %d. %b %Y")
+        local lines = {
+            "#!/usr/bin/env python3",
+            "",
+            "# =============================================================================",
+            "# Authors:      Román García Guill",
+            "# Contact:      romangarciaguill@gmail.com",
+            "# Created:      " .. date,
+            "#",
+            "# Purpose:      Test for ",
+            "# =============================================================================",
+            "",
+            "import pytest",
+            "",
+            "def func() -> None:",
+            "    pass",
+            "",
+            "def test_func() -> None:",
+            "    assert func() == ",
+        }
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+        vim.api.nvim_win_set_cursor(0, { 8, 27 })
+    end,
+})
+
+-- ============================================================================
+-- BASH HEADER
+-- ============================================================================
+local bash_group = augroup("AutoHeaderSh", { clear = true })
+autocmd("BufNewFile", {
+    group = bash_group,
+    pattern = "*.sh",
+    callback = function()
+        local date = os.date("%a %d. %b %Y")
+        local lines = {
+            "#!/bin/bash",
+            "",
+            "# =============================================================================",
+            "# Authors:      Román García Guill",
+            "# Contact:      romangarciaguill@gmail.com",
+            "# Created:      " .. date,
+            "#",
+            "# Purpose:       ",
+            "# =============================================================================",
+        }
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+        vim.api.nvim_win_set_cursor(0, { 8, 18 })
+    end,
+})
+
+-- ============================================================================
+-- F5 EXECUTION
+-- ============================================================================
+autocmd("FileType", {
+    pattern = "python",
+    callback = function()
+        vim.keymap.set("n", "<F5>", function()
+            vim.cmd("w")
+            vim.cmd("split | terminal python3 %")
+        end, { buffer = true })
+    end,
+})
+autocmd("FileType", {
+    pattern = { "sh", "bash" },
+    callback = function()
+        vim.keymap.set("n", "<F5>", function()
+            vim.cmd("w")
+            vim.cmd("split | terminal bash %")
+        end, { buffer = true })
+    end,
+})
+
+
+
+./lua/config/terminal.lua
+----------------
+local function toggle_terminal()
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+        local buf = vim.api.nvim_win_get_buf(win)
+
+        if vim.bo[buf].buftype == "terminal" then
+            vim.api.nvim_win_close(win, true)
+            return
+        end
+    end
+
+    vim.cmd("botright split")
+    vim.cmd("resize 5")
+    vim.cmd("terminal")
+end
+
+vim.keymap.set("n", "<C-b>", toggle_terminal)
+
+vim.keymap.set("t", "jk", [[<C-\><C-n>]])
+
+
+
+./lua/config/options.lua
+----------------
+local opt = vim.opt
+
+opt.termguicolors = true
+
+opt.undofile = true
+opt.mouse = "a"
+
+opt.cursorline = true
+
+opt.scrolloff = 8
+opt.sidescrolloff = 8
+
+opt.splitbelow = true
+opt.splitright = true
+
+opt.clipboard = "unnamedplus"
+
+opt.updatetime = 250
+opt.shell = "/usr/bin/zsh"
+
+opt.complete:remove("i")
+
+opt.wildmenu = true
+opt.wildmode = "longest:full,full"
+
+opt.number = true
+opt.relativenumber = false
+
+opt.wrap = true
+opt.linebreak = true
+
+opt.expandtab = true
+opt.autoindent = true
+opt.smartindent = true
+
+opt.tabstop = 4
+opt.shiftwidth = 4
+
+opt.colorcolumn = "80"
+
+opt.ignorecase = true
+opt.smartcase = true
+opt.hlsearch = true
+opt.incsearch = true
+
+opt.timeoutlen = 200
+
+opt.autoread = true
+
+opt.spellsuggest = "best,9"
+
+opt.conceallevel = 0
+opt.foldlevel = 99
+opt.signcolumn = "yes"
+
+opt.guicursor = "n-v-c:block,i:ver25"
+
+vim.g.mapleader = "\\"
+
+opt.background = "dark"
+vim.cmd.colorscheme("sorbet")
+
+
+
+./lua/config/lazy.lua
+----------------
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable",
+        lazypath,
+    })
+end
+
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+    spec = {
+        { import = "plugins" },
+    },
+
+    checker = {
+        enabled = false,
+    },
+})
+
+

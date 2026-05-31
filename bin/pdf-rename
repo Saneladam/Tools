@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Fri 29. May 2026
+#
+# Purpose:      Renames automatically the pdfs with the first line
+# =============================================================================
+
+file=$1
+dir=$(dirname $file)
+title=$(pdftotext $file - | head -1 | tr ' ' '_')
+
+mv "$file" "$dir/${title}.pdf"

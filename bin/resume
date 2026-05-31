@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+out="resume.txt"
+show_all=false
+
+: > "$out"
+
+{
+    echo "Resume created on: $(date) over $(pwd):"
+    echo "================"
+
+    if $show_all; then
+        tree
+    else
+        tree -I '.*'
+    fi
+
+    echo "================"
+
+} | tee -a "$out"
+
+{
+    if $show_all; then
+
+        find . -type f ! -name "$out"
+
+    else
+
+        find . \
+            -path '*/.*' -prune -o \
+            -type f \
+            ! -name "$out" \
+            ! -name '.*' \
+            -print
+
+    fi
+} | while IFS= read -r f; do
+
+    [[ -z "$f" ]] && continue
+
+    # incluir solo texto
+    if file --mime "$f" | grep -q 'text/'; then
+
+        {
+            echo
+            echo "$f"
+            echo "----------------"
+
+            cat "$f"
+
+            printf "\n\n"
+        } >> "$out"
+
+    fi
+
+done
+
+echo "Completed, output written to $out"

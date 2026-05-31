@@ -1,0 +1,122 @@
+#!/usr/bin/env python3
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Sun 31. May 2026
+#
+# Purpose:      Encrypts the shit out of something using XOR.
+# =============================================================================
+
+from pathlib import Path
+import argparse
+import secrets
+
+MAGIC = b"XOR1"
+CHUNK_SIZE = 8192
+
+
+def xor_chunk(data: bytes, key: bytes, offset: int) -> bytes:
+    keylen = len(key)
+    return bytes(b ^ key[(offset + i) % keylen] for i, b in enumerate(data))
+
+
+def iter_files(paths, recursive):
+    for path in paths:
+        path = Path(path)
+        if path.is_file():
+            yield path
+        elif path.is_dir():
+            if not recursive:
+                continue
+            yield from (p for p in path.rglob("*") if p.is_file())
+
+
+def encrypt_file(path: Path, key: bytes):
+    encrypted_name = xor_chunk(
+        path.name.encode(),
+        key,
+        0,
+    )
+    output = path.with_name(secrets.token_hex(8) + ".xor")
+    with open(path, "rb") as fin:
+        with open(output, "wb") as fout:
+            fout.write(MAGIC)
+            fout.write(len(encrypted_name).to_bytes(2, "big"))
+            fout.write(encrypted_name)
+            offset = 0
+            while chunk := fin.read(CHUNK_SIZE):
+                fout.write(
+                    xor_chunk(
+                        chunk,
+                        key,
+                        offset,
+                    )
+                )
+                offset += len(chunk)
+    path.unlink()
+    print(f"Encrypted: {path} -> {output}")
+
+
+def decrypt_file(path: Path, key: bytes):
+    with open(path, "rb") as fin:
+        magic = fin.read(4)
+        if magic != MAGIC:
+            raise ValueError(f"{path}: invalid XOR file")
+        name_len = int.from_bytes(
+            fin.read(2),
+            "big",
+        )
+        encrypted_name = fin.read(name_len)
+        original_name = xor_chunk(
+            encrypted_name,
+            key,
+            0,
+        ).decode()
+        output = path.with_name(original_name)
+        with open(output, "wb") as fout:
+            offset = 0
+            while chunk := fin.read(CHUNK_SIZE):
+                fout.write(
+                    xor_chunk(
+                        chunk,
+                        key,
+                        offset,
+                    )
+                )
+                offset += len(chunk)
+    path.unlink()
+    print(f"Decrypted: {path} -> {output}")
+
+
+def process(path: Path, key: bytes):
+    if path.suffix == ".xor":
+        decrypt_file(path, key)
+    else:
+        encrypt_file(path, key)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-r",
+        "--recursive",
+        action="store_true",
+    )
+    parser.add_argument(
+        "paths",
+        nargs="+",
+    )
+    args = parser.parse_args()
+    key = input("Passphrase: ").encode()
+    if not key:
+        raise ValueError("Empty passphrase")
+    for file in iter_files(
+        args.paths,
+        args.recursive,
+    ):
+        process(file, key)
+
+
+if __name__ == "__main__":
+    main()

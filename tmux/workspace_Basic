@@ -8,25 +8,30 @@
 # Purpose:      Creates the whole tmux workspace for scientific reasearch.
 # =============================================================================
 
-SESSION="science"
+SESSION="basic"
 
 if ! tmux has-session -t "$SESSION" 2>/dev/null; then
 
-    # Window 2: code
-    tmux new-window -t "$SESSION" -n code
-    tmux split-window -h -t "$SESSION":code
+    # Window 1: mail
+    tmux new-session -d -s "$SESSION" -n mail
+
+    # Window 2: monitoring
+    tmux new-window -t "$SESSION" -n monitoring
+    tmux split-window -h -t "$SESSION":monitoring
 
     # Window 3: web
     tmux new-window -t "$SESSION" -n websearch
 
     # Programs
-    tmux send-keys -t "$SESSION":code.1 'nvim' C-m
-    tmux send-keys -t "$SESSION":code.2 'gowork' C-m
+    tmux send-keys -t "$SESSION":mail 'aerc' C-m
+
+    tmux send-keys -t "$SESSION":monitoring.1 'btop' C-m
+    tmux send-keys -t "$SESSION":monitoring.2 'news' C-m
 
     tmux send-keys -t "$SESSION":websearch 'w3m duckduckgo.com' C-m
 
     # Focus
-    tmux select-window -t "$SESSION":code
+    tmux select-window -t "$SESSION":mail
 fi
 
 exec tmux attach-session -t "$SESSION"

@@ -9,10 +9,10 @@ local function toggle_terminal()
     end
 
     vim.cmd("botright split")
-    vim.cmd("resize 10")
+    vim.cmd("resize 5")
     vim.cmd("terminal")
 end
 
-vim.keymap.set("n", "<C-b>", toggle_terminal)
+vim.keymap.set("n", "<C-m>", toggle_terminal)
 
 vim.keymap.set("t", "jk", [[<C-\><C-n>]])

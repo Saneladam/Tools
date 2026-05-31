@@ -42,13 +42,20 @@ autocmd("BufReadPost", {
 -- ============================================================================
 -- NOTEBOOK STYLE CELL HIGHLIGHT (# %%)
 -- ============================================================================
+local cell_group = augroup("NotebookCells", { clear = true })
+
 autocmd("FileType", {
+    group = cell_group,
     pattern = { "python", "sh", "bash" },
     callback = function()
-        vim.cmd([[syntax match UranusCell "^# %%.*"]])
-        vim.api.nvim_set_hl(0, "UranusCell", {
+
+        vim.cmd([[
+            syntax match NotebookCell "^# %%.*$"
+        ]])
+
+        vim.api.nvim_set_hl(0, "NotebookCell", {
             fg = "#ffffff",
-            bg = "#5f00af",
+            bg = "#7a3fc7",
             bold = true,
         })
     end,
@@ -76,7 +83,7 @@ autocmd("BufNewFile", {
             "# Contact:      romangarciaguill@gmail.com",
             "# Created:      " .. date,
             "#",
-            "# Purpose:      ",
+            "# Purpose:       ",
             "# =============================================================================",
             "",
             "def main() -> None:",
@@ -87,7 +94,7 @@ autocmd("BufNewFile", {
         }
         vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
         -- Posición cursor
-        vim.api.nvim_win_set_cursor(0, { 8, 17 })
+        vim.api.nvim_win_set_cursor(0, { 8, 18 })
     end,
 })
 
@@ -108,7 +115,7 @@ autocmd("BufNewFile", {
             "# Contact:      romangarciaguill@gmail.com",
             "# Created:      " .. date,
             "#",
-            "# Purpose:      Test for",
+            "# Purpose:      Test for ",
             "# =============================================================================",
             "",
             "import pytest",
@@ -120,7 +127,7 @@ autocmd("BufNewFile", {
             "    assert func() == ",
         }
         vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
-        vim.api.nvim_win_set_cursor(0, { 8, 26 })
+        vim.api.nvim_win_set_cursor(0, { 8, 27 })
     end,
 })
 
@@ -141,11 +148,11 @@ autocmd("BufNewFile", {
             "# Contact:      romangarciaguill@gmail.com",
             "# Created:      " .. date,
             "#",
-            "# Purpose:      ",
+            "# Purpose:       ",
             "# =============================================================================",
         }
         vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
-        vim.api.nvim_win_set_cursor(0, { 8, 17 })
+        vim.api.nvim_win_set_cursor(0, { 8, 18 })
     end,
 })
 

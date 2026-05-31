@@ -1,5 +1,43 @@
 return {
     {
+        "nvim-neo-tree/neo-tree.nvim",
+        branch = "v3.x",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-tree/nvim-web-devicons",
+            "MunifTanjim/nui.nvim",
+        },
+        config = function()
+            require("neo-tree").setup({
+                filesystem = {
+                    follow_current_file = true,
+                    hijack_netrw_behavior = "open_default",
+                },
+                window = {
+                    width = 28,
+                },
+            })
+
+            vim.keymap.set("n", "<C-n>", ":Neotree toggle<CR>", { silent = true })
+        end,
+    },
+    {
+      "nvim-lualine/lualine.nvim",
+      opts = {
+        options = {
+          theme = "auto",
+          section_separators = "",
+          component_separators = "",
+        }
+      }
+    },
+    {
+      "folke/tokyonight.nvim",
+      lazy = false,
+      priority = 1000,
+      opts = {},
+    },
+    {
         "goolord/alpha-nvim",
 
         dependencies = {
@@ -12,17 +50,17 @@ return {
             local dashboard = require("alpha.themes.dashboard")
 
             dashboard.section.header.val = {
-[[             *        *           ]],
-[[        *          *              ]],
-[[            *  _|_        *       ]],
-[[       *    .-' * '-. *           ]],
-[[   *       /       * \      *     ]],
-[[        *  ^^^^^|^^^^^         *  ]],
-[[    *       .~. |  .~.      *     ]],
-[[  *        / ^ \| / ^ \           ]],
-[[       *  (|   |J/|   |)  *    *  ]],
-[[          '\   /`"\   /`          ]],
-[[-- '' -'-'  ^`^    ^`^  -- '' -'-']],
+                [[             *     *              ]],
+                [[        *                *        ]],
+                [[            *  _|_  *             ]],
+                [[       *    .-' * '-. *           ]],
+                [[   *       /         \      *     ]],
+                [[        *  ^^^^^|^^^^^         *  ]],
+                [[    *       .~. |  .~.      *     ]],
+                [[  *        / ^ \| / ^ \           ]],
+                [[       *  (|   |J/|   |)  *    *  ]],
+                [[          '\   /`"\   /`          ]],
+                [[-- '' -'-'  ^`^    ^`^  -- '' -'-']],
             }
 
             dashboard.section.buttons.val = {

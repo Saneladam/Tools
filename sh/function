@@ -115,3 +115,7 @@ function wiki() {
 function science() {
     ~/Tools/tmux/workspace_Science
 }
+
+function basic() {
+    ~/Tools/tmux/workspace_Basic
+}
