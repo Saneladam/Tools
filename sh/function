@@ -108,14 +108,19 @@ function w3mf() {
     w3m "https://duckduckgo.com/html/?q=$*"
 }
 
+function foam() {
+    source /opt/OpenFOAM/OpenFOAM-13/etc/bashrc
+    PS1='\[\e[1;31m\]\u\[\e[0m\]\[\e[1;37m\]⚛\[\e[0m\]\[\e[1;34m\]FOAM\[\e[0m\] \[\e[38;5;70m\]\w\]\e[0m\]\$ '
+}
+
 function wiki() {
     wiki-tui $1
 }
 
-function science() {
-    ~/Tools/tmux/workspace_Science
+function work() {
+    ~/Tools/tmux/work
 }
 
 function basic() {
-    ~/Tools/tmux/workspace_Basic
+    ~/Tools/tmux/basic
 }

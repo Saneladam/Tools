@@ -6,9 +6,9 @@
 #
 
 battery=$( cat /sys/class/power_supply/BAT0/capacity 2>/dev/null )
-date=$( date '+%A %d/%m/%Y' )
+date=$( date '+%a %d/%m/%Y' )
 time=$( date '+%H:%M' )
 
-echo "  ########################################### "
+echo "  ###################################### "
 echo "< ##   $time ~ $date ~ $battery%   ## >"
-echo "  ########################################### "
+echo "  ###################################### "

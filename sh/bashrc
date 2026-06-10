@@ -19,11 +19,11 @@ export PATH="$HOME/.local/bin:$PATH"
 export PYTHONPATH="$HOME/Tools/python:$PYTHONPATH"
 
 # Sourcing files
-source ~/Tools/sh/alias
-source ~/Tools/sh/analysis
-source ~/Tools/sh/bash-bindings
-source ~/Tools/sh/function
-[ -f ~/.cargo/env ] && source ~/.cargo/env
+source $HOME/Tools/sh/alias
+source $HOME/Tools/sh/analysis
+source $HOME/Tools/sh/bash-bindings
+source $HOME/Tools/sh/function
+[ -f $HOME/.cargo/env ] && source $HOME/.cargo/env
 
 # History
 HISTSIZE=1000000
@@ -50,13 +50,30 @@ clear
 # --- pyenv (MUST be early in PATH) ---
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init --path)"
-eval "$(pyenv init -)"
-# eval "$(pyenv virtualenv-init -)"
-# eval "$(direnv hook zsh)"
+
+# eval "$(pyenv init --path)"
+# eval "$(pyenv init -)"
+pyenv() {
+    unset -f pyenv
+    eval "$(command pyenv init -)"
+    pyenv "$@"
+}
 ###############################################################################
 
 # Eval apps
 eval "$(zoxide init bash)"
 
 . "$HOME/.cargo/env"
+
+###############################################################################
+# --- OpenFOAM  ---
+export WM_PROJECT_DIR=/opt/OpenFOAM/OpenFOAM-13
+# if [ -f $WM_PROJECT_DIR/etc/bashrc ]; then
+#     source $WM_PROJECT_DIR/etc/bashrc
+# fi
+# use foam to load the foam
+
+# --- openmpi  ---
+export PATH=/usr/lib/openmpi/bin:$PATH
+export LD_LIBRARY_PATH=/usr/lib/openmpi/lib:$LD_LIBRARY_PATH
+###############################################################################

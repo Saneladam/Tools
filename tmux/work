@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Sun 24. May 2026
+#
+# Purpose:      Creates the whole tmux workspace for scientific reasearch.
+# =============================================================================
+
+SESSION="work"
+
+if ! tmux has-session -t "$SESSION" 2>/dev/null; then
+
+    # Window 1: Tools
+    tmux new-session -d -s "$SESSION" -n Tools
+    tmux send-keys -t "$SESSION":Tools 'cd ~/Tools/' C-m
+
+    # Window 2: Codes
+    tmux new-window -t "$SESSION" -n Codes
+    tmux send-keys -t "$SESSION":Codes 'cd ~/Codes/' C-m
+
+    # Window 3: Exercices
+    tmux new-window -t "$SESSION" -n Exercices
+    tmux send-keys -t "$SESSION":Exercices 'cd ~/Exercices/' C-m
+
+    # Window 4: Notes
+    tmux new-window -t "$SESSION" -n Notes
+    tmux send-keys -t "$SESSION":Notes 'cd ~/Notes/' C-m
+
+    # Focus
+    tmux select-window -t "$SESSION":Notes
+
+fi
+
+exec tmux attach-session -t "$SESSION"

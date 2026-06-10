@@ -16,7 +16,7 @@ opt.splitright = true
 opt.clipboard = "unnamedplus"
 
 opt.updatetime = 250
-opt.shell = "/usr/bin/zsh"
+opt.shell = "/usr/bin/bash"
 
 opt.complete:remove("i")
 

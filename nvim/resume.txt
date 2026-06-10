@@ -1,4 +1,4 @@
-Resume created on: Fri May 29 18:24:56 CEST 2026 over /home/akash/.config/nvim:
+Resume created on: Tue Jun  9 16:06:09 CEST 2026 over /home/akash/.config/nvim:
 ================
 .
 ├── init.lua
@@ -204,10 +204,10 @@ return {
 return {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-    -- lazy = false,
     event = { "BufReadPre", "BufNewFile" },
+
     config = function()
-        require("nvim-treesitter.configs").setup({
+        require("nvim-treesitter").setup({
             ensure_installed = {
                 "lua",
                 "python",
@@ -215,8 +215,14 @@ return {
                 "c",
                 "cpp",
             },
-            highlight = { enable = true },
-            indent = { enable = true },
+
+            highlight = {
+                enable = true,
+            },
+
+            indent = {
+                enable = true,
+            },
         })
     end,
 }
@@ -797,7 +803,7 @@ local function toggle_terminal()
     vim.cmd("terminal")
 end
 
-vim.keymap.set("n", "<C-b>", toggle_terminal)
+vim.keymap.set("n", "<C-m>", toggle_terminal)
 
 vim.keymap.set("t", "jk", [[<C-\><C-n>]])
 
@@ -823,7 +829,7 @@ opt.splitright = true
 opt.clipboard = "unnamedplus"
 
 opt.updatetime = 250
-opt.shell = "/usr/bin/zsh"
+opt.shell = "/usr/bin/bash"
 
 opt.complete:remove("i")
 
@@ -889,6 +895,10 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     spec = {
         { import = "plugins" },
+    },
+
+    defaults = {
+        lazy = false,
     },
 
     checker = {
