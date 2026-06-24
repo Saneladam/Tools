@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # =============================================================================
 # Authors:      Román García Guill
@@ -11,31 +11,39 @@
 wallpaper_dir="$HOME/Pictures/Wallpapers"
 current_link="$wallpaper_dir/current"
 
-# Obtener lista ordenada
-wallpapers=$(find "$wallpaper_dir" -maxdepth 1 -type f | sort)
+mapfile -t wallpapers < <(
+    find "$wallpaper_dir" \
+        -maxdepth 1 \
+        -type f \
+        \( \
+            -iname "*.png" -o \
+            -iname "*.jpg" -o \
+            -iname "*.jpeg" -o \
+            -iname "*.webp" \
+        \) \
+        | sort
+)
 
-# Resolver wallpaper actual
-current=$(readlink -f "$current_link")
+current="$(readlink -f "$current_link")"
 
-found=0
 next=""
 
-for wp in $wallpapers; do
-    if [ "$found" = "1" ]; then
-        next="$wp"
+for i in "${!wallpapers[@]}"; do
+    if [[ "${wallpapers[$i]}" == "$current" ]]; then
+        next="${wallpapers[$(( (i + 1) % ${#wallpapers[@]} ))]}"
         break
     fi
-
-    [ "$wp" = "$current" ] && found=1
 done
 
-# Si no encontró siguiente -> volver al primero
-if [ -z "$next" ]; then
-    next=$(printf "%s\n" "$wallpapers" | head -n 1)
+if [[ -z "$next" ]]; then
+    next="${wallpapers[0]}"
 fi
 
-# Actualizar symlink
-ln -sf "$next" "$current_link"
+ln -sfn "$next" "$current_link"
 
-# Cambiar wallpaper (sway)
 swaymsg output "*" bg "$next" fill
+
+notify-send \
+    -t 3000 \
+    "Wallpaper" \
+    "$(basename "$next")"

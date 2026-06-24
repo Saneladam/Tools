@@ -64,4 +64,82 @@ return {
     }), {
         description = "Typst composed figure (2 columns)"
     }),
+    
+    -- Outline Box
+    s("box", fmt([[
+    #box(
+      stroke: 1pt,
+      outset: 5pt,
+      text()[{}]
+      )
+    ]], {
+        i(1, "Inside the Box"),
+    }), {
+        description = "Regular Typst box"
+    }),
+
+    -- Blue Box
+    s("question", fmt([[
+    #box(
+      stroke: 1pt + blue,
+      fill: blue.transparentize(75%),
+      outset: 5pt,
+      radius: 5pt,
+      width: 100%,
+      text()[{}]
+      )
+    ]], {
+        i(1, "Inside the Box"),
+    }), {
+        description = "Blue Typst box"
+    }),
+    
+    -- Yellow Box
+    s("annotation", fmt([[
+    #box(
+      stroke: 1pt + yellow,
+      fill: yellow.transparentize(75%),
+      outset: 5pt,
+      radius: 5pt,
+      width: 100%,
+      text()[{}]
+      )
+    ]], {
+        i(1, "Inside the Box"),
+    }), {
+        description = "Yellow Typst box"
+    }),
+
+    -- Green Box
+    s("theory", fmt([[
+    #box(
+      stroke: 1pt + green,
+      fill: green.transparentize(75%),
+      outset: 5pt,
+      radius: 5pt,
+      width: 100%,
+      text()[{}]
+      )
+    ]], {
+        i(1, "Inside the Box"),
+    }), {
+        description = "Green Typst box"
+    }),
+
+    -- Red Box
+    s("problem", fmt([[
+    #box(
+      stroke: 1pt + red,
+      fill: red.transparentize(75%),
+      outset: 5pt,
+      radius: 5pt,
+      width: 100%,
+      text()[{}]
+      )
+    ]], {
+        i(1, "Inside the Box"),
+    }), {
+        description = "Red Typst box"
+    }),
+
 }

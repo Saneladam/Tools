@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Thu 18. Jun 2026
+#
+# Purpose:      Changes the default of the touchpad option in the sway config. 
+# =============================================================================
+
+state=$(
+    swaymsg -t get_inputs \
+    | grep -A20 Touchpad \
+    | grep tap
+)
+
+if echo "$state" | grep -q enabled; then
+    swaymsg input type:touchpad tap disabled
+
+    notify-send \
+        -t 2000 \
+        "Touchpad" \
+        "Tap disabled"
+
+else
+    swaymsg input type:touchpad tap enabled
+
+    notify-send \
+        -t 2000 \
+        "Touchpad" \
+        "Tap enabled"
+fi

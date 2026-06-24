@@ -42,23 +42,20 @@ autocmd("BufReadPost", {
 -- ============================================================================
 -- NOTEBOOK STYLE CELL HIGHLIGHT (# %%)
 -- ============================================================================
-local cell_group = augroup("NotebookCells", { clear = true })
 
 autocmd("FileType", {
     group = cell_group,
     pattern = { "python", "sh", "bash" },
     callback = function()
-
-        vim.cmd([[
-            syntax match NotebookCell "^# %%.*$"
-        ]])
-
-        vim.api.nvim_set_hl(0, "NotebookCell", {
-            fg = "#ffffff",
-            bg = "#7a3fc7",
-            bold = true,
-        })
+        -- vim.fn.matchadd("NotebookCell", "^# %%.*$")
+        vim.fn.matchadd("NotebookCell", [[^\s*# %%.*$]])
     end,
+})
+
+vim.api.nvim_set_hl(0, "NotebookCell", {
+    fg = "#ffffff",
+    bg = "#7a3fc7",
+    bold = true,
 })
 
 -- ============================================================================
@@ -159,6 +156,15 @@ autocmd("BufNewFile", {
 -- ============================================================================
 -- F5 EXECUTION
 -- ============================================================================
+autocmd("FileType", {
+    pattern = "gnuplot",
+    callback = function()
+        vim.keymap.set("n", "<F5>", function()
+            vim.cmd("w")
+            vim.cmd("gnuplot %")
+        end, { buffer = true })
+    end,
+})
 autocmd("FileType", {
     pattern = "python",
     callback = function()

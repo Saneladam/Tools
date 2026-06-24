@@ -1,4 +1,4 @@
-Resume created on: Tue Jun  9 16:06:09 CEST 2026 over /home/akash/.config/nvim:
+Resume created on: Thu Jun 18 00:45:01 CEST 2026 over /home/akash/.config/nvim:
 ================
 .
 ├── init.lua
@@ -283,20 +283,39 @@ return {
             local dashboard = require("alpha.themes.dashboard")
 
             dashboard.section.header.val = {
-                [[             *     *              ]],
-                [[        *                *        ]],
-                [[            *  _|_  *             ]],
-                [[       *    .-' * '-. *           ]],
-                [[   *       /         \      *     ]],
-                [[        *  ^^^^^|^^^^^         *  ]],
-                [[    *       .~. |  .~.      *     ]],
-                [[  *        / ^ \| / ^ \           ]],
-                [[       *  (|   |J/|   |)  *    *  ]],
-                [[          '\   /`"\   /`          ]],
-                [[-- '' -'-'  ^`^    ^`^  -- '' -'-']],
+                -- [[             *     *              ]],
+                -- [[        *                *        ]],
+                -- [[            *  _|_  *             ]],
+                -- [[       *    .-' * '-. *           ]],
+                -- [[   *       /         \      *     ]],
+                -- [[        *  ^^^^^|^^^^^         *  ]],
+                -- [[    *       .~. |  .~.      *     ]],
+                -- [[  *        / ^ \| / ^ \           ]],
+                -- [[       *  (|   |J/|   |)  *    *  ]],
+                -- [[          '\   /`"\   /`          ]],
+                -- [[-- '' -'-'  ^`^    ^`^  -- '' -'-']],
+                [[                        _mmmmm_ ]],
+                [[                       mMMMMMMMm ]],
+                [[                       MM" . "MM ]],
+                [[                       (| = = |) ]],
+                [[                        \  u  /  ]],
+                [[                    ____/`---'\____ ]],
+                [[                  .'  \\|     |//  `. ]],
+                [[                 /  \\|||  :  |||//  \ ]],
+                [[                /  _||||| -:- |||||_  \ ]],
+                [[                |   | \\\  -  /'| |   | ]],
+                [[                | \_|  `\`---'//  |_/ | ]],
+                [[                \  .-\__ `-. -'__/-.  / ]],
+                [[              ___`. .'  /--.--\  `. .'___ ]],
+                [[           ."" '<  `.___\_<|>_/___.' _> \"". ]],
+                [[          | | :  `- \`. ;`. _/; .'/ /  .' ; | ]],
+                [[          \  \ `-.   \_\_`. _.'_/_/  -' _.' / ]],
+                [[===========`-.`___`-.__\ \___  /__.-'_.'_.-'=========== ]],
+                [[                        `=--=-'  ]],
             }
 
             dashboard.section.buttons.val = {
+                dashboard.button("w", "   Write note", ":e ~/Notes/ <CR>"),
                 dashboard.button("n", "   New file", ":ene <CR>"),
                 dashboard.button("f", "   Find file", ":Telescope find_files<CR>"),
                 dashboard.button("q", "   Quit", ":qa<CR>"),
@@ -373,6 +392,14 @@ return {
     },
     {
         "junegunn/goyo.vim",
+    },
+    {
+        "kylechui/nvim-surround",
+        version = "*",
+        event = "VeryLazy",
+        config = function()
+            require("nvim-surround").setup({})
+        end,
     },
 }
 
@@ -543,6 +570,84 @@ return {
     }), {
         description = "Typst composed figure (2 columns)"
     }),
+    
+    -- Outline Box
+    s("box", fmt([[
+    #box(
+      stroke: 1pt,
+      outset: 5pt,
+      text()[{}]
+      )
+    ]], {
+        i(1, "Inside the Box"),
+    }), {
+        description = "Regular Typst box"
+    }),
+
+    -- Blue Box
+    s("question", fmt([[
+    #box(
+      stroke: 1pt + blue,
+      fill: blue.transparentize(75%),
+      outset: 5pt,
+      radius: 5pt,
+      width: 100%,
+      text()[{}]
+      )
+    ]], {
+        i(1, "Inside the Box"),
+    }), {
+        description = "Blue Typst box"
+    }),
+    
+    -- Yellow Box
+    s("annotation", fmt([[
+    #box(
+      stroke: 1pt + yellow,
+      fill: yellow.transparentize(75%),
+      outset: 5pt,
+      radius: 5pt,
+      width: 100%,
+      text()[{}]
+      )
+    ]], {
+        i(1, "Inside the Box"),
+    }), {
+        description = "Yellow Typst box"
+    }),
+
+    -- Green Box
+    s("theory", fmt([[
+    #box(
+      stroke: 1pt + green,
+      fill: green.transparentize(75%),
+      outset: 5pt,
+      radius: 5pt,
+      width: 100%,
+      text()[{}]
+      )
+    ]], {
+        i(1, "Inside the Box"),
+    }), {
+        description = "Green Typst box"
+    }),
+
+    -- Red Box
+    s("problem", fmt([[
+    #box(
+      stroke: 1pt + red,
+      fill: red.transparentize(75%),
+      outset: 5pt,
+      radius: 5pt,
+      width: 100%,
+      text()[{}]
+      )
+    ]], {
+        i(1, "Inside the Box"),
+    }), {
+        description = "Red Typst box"
+    }),
+
 }
 
 
@@ -648,23 +753,37 @@ autocmd("BufReadPost", {
 -- ============================================================================
 -- NOTEBOOK STYLE CELL HIGHLIGHT (# %%)
 -- ============================================================================
-local cell_group = augroup("NotebookCells", { clear = true })
+-- local cell_group = augroup("NotebookCells", { clear = true })
+--
+-- autocmd("FileType", {
+--     group = cell_group,
+--     pattern = { "python", "sh", "bash" },
+--     callback = function()
+--
+--         vim.cmd([[
+--             syntax match NotebookCell "^# %%.*$"
+--         ]])
+--
+--         vim.api.nvim_set_hl(0, "NotebookCell", {
+--             fg = "#ffffff",
+--             bg = "#7a3fc7",
+--             bold = true,
+--         })
+--     end,
+-- })
 
 autocmd("FileType", {
     group = cell_group,
     pattern = { "python", "sh", "bash" },
     callback = function()
-
-        vim.cmd([[
-            syntax match NotebookCell "^# %%.*$"
-        ]])
-
-        vim.api.nvim_set_hl(0, "NotebookCell", {
-            fg = "#ffffff",
-            bg = "#7a3fc7",
-            bold = true,
-        })
+        vim.fn.matchadd("NotebookCell", "^# %%.*$")
     end,
+})
+
+vim.api.nvim_set_hl(0, "NotebookCell", {
+    fg = "#ffffff",
+    bg = "#7a3fc7",
+    bold = true,
 })
 
 -- ============================================================================

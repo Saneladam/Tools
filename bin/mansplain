@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Roman Garcia Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Thu 04. Dec 2025
+#
+# Purpose:      Run a list of all the available manuals and prints the selected
+#               with zathura.
+# =============================================================================
+
+#!/bin/bash
+
+choice=$(
+  man -k . \
+  | awk -F' ' '{print $1 " " $2}' \
+  | wmenu -i -l 25 -p "Manuals:"
+) || exit 1
+
+cmd=$(echo "$choice" | awk '{print $1}')
+
+[ -z "$cmd" ] && exit 0
+
+man -Tpdf "$cmd" | zathura -
+

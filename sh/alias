@@ -16,9 +16,6 @@ alias c='clear && read_info'
 
 # Vim open
 alias vim='nvim'
-alias bvim='vim ~/.bashrc'
-alias zvim='vim ~/.zshrc'
-alias vvim='nvim ~/.config/nvim/init.lua'
 
 # Directories
 alias setwork='pwd > ~/.workdir'
@@ -39,11 +36,12 @@ alias activate='source ./.venv/bin/activate'
 alias open='xdg-open'
 
 # Tmux
+alias t='tmux'
 alias ta='tmux attach'
 alias tls='tmux ls'
-alias librewolf='flatpak run io.gitlab.librewolf-community'
 
 # OTHER TOOLS
+alias librewolf='flatpak run io.gitlab.librewolf-community'
 alias news='newsboat'
 alias solitaire='ttysolitaire --no-background'
 alias chess='chess-tui'

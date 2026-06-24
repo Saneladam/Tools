@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Roman Garcia Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Thu 04. Dec 2025
+#
+# Purpose:      Run a list of all the available lectures to read and shows the
+#               chosen with zathura.
+# =============================================================================
+
+TERMINAL="alacritty"
+README_DIR="$HOME/Resources/Books/README.md"
+folders="$HOME/Resources"
+
+selected () {
+
+    choice=$(
+        {
+            echo "README"
+            find "$folders" \
+                -path "$folder/.git" -prune -o \
+                -name "*.pdf" \
+                -printf "%T@ %p\n" \
+                | sort -nr \
+                | cut -d' ' -f2-
+        } \
+        | wmenu -i -l 25 -p "Select the Reading Material:"
+    ) || exit 1
+
+    case "$choice" in
+        README)
+            setsid -f "$TERMINAL" -e nvim "$README_DIR" >/dev/null 2>&1
+            ;;
+        *.pdf)
+            zathura "$choice"
+            ;;
+        *)
+            exit 0
+            ;;
+    esac
+}
+
+selected
