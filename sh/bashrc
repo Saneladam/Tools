@@ -6,7 +6,8 @@
 # Prompt
 # PROMPT='%F{red}%n@%m %F{blue}%~ %f⚛ '
 # PS1='\[\e[1;31m\]\u\[\e[0m\]\[\e[1;35m\]⚛\[\e[0m\]\[\e[1;34m\]\h\[\e[0m\] \[\e[38;5;70m\]\w\]\e[0m\]\$ '
-PS1='\[\e[1;31m\]\u\[\e[0m\]\[\e[1;37m\]⚛\[\e[0m\]\[\e[1;34m\]\h\[\e[0m\] \[\e[38;5;70m\]\w\]\e[0m\]\$ '
+# PS1='\[\e[1;31m\]\u\[\e[0m\]\[\e[1;37m\]⚛\[\e[0m\]\[\e[1;34m\]\h\[\e[0m\] \[\e[38;5;70m\]\w\]\e[0m\]\$ '
+source "$HOME/Tools/sh/current.theme"
 PS2='... '
 PS3='::: '
 PS4='+ ${BASH_SOURCE}:${LINENO}: '
@@ -30,9 +31,9 @@ HISTSIZE=1000000
 HISTFILESIZE=2000000
 HISTCONTROL=ignoreboth
 shopt -s histappend
-PROMPT_COMMAND="history -a; history -n"
+export PROMPT_COMMAND="history -a"
+# PROMPT_COMMAND="history -a; history -n"
 
-clear
 
 ###############################################################################
 # # >>> mamba initialize >>>

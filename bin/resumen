@@ -56,3 +56,4 @@ show_all=false
 done
 
 echo "Completed, output written to $out"
+copy $out

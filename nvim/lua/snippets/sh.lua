@@ -21,4 +21,16 @@ return {
     description = "Bash block separator"
   }),
   --
+  -- if __name__=="__main__":
+  -- ...
+  s("ifname", fmt([[
+  if ! (return 2>/dev/null); then
+      {}
+  fi
+  ]], {
+    i(1, "Command"),
+  }), {
+    description = "if name in bash"
+  }),
+  --
 }

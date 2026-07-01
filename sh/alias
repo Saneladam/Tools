@@ -43,7 +43,7 @@ alias tls='tmux ls'
 # OTHER TOOLS
 alias librewolf='flatpak run io.gitlab.librewolf-community'
 alias news='newsboat'
-alias solitaire='ttysolitaire --no-background'
+alias solitario='ttysolitaire --no-background'
 alias chess='chess-tui'
 alias audio='alsamixer'
 alias wifi='nmtui'

@@ -4,9 +4,11 @@ TERMINAL="alacritty"
 folder="$HOME/Notes"
 TODO_DIR="$HOME/Notes/ToDo.md"
 
+source ~/.config/bemenu/theme.sh
+
 newnote () {
     name="$(
-        echo "" | wmenu -p 'Enter note name:'
+        echo "" | bemenu "${BEMENU_OPTS[@]}" -p 'Enter note name:'
     )"
 
     : "${name:=$(date +%F-%a | tr ':' '_')}"
@@ -27,7 +29,7 @@ selected () {
                 | sort -nr \
                 | cut -d' ' -f2-
         } \
-        | wmenu -i -l 25 -p "Choose note:"
+        | bemenu "${BEMENU_OPTS[@]}" -p "Choose note:"
     ) || exit 1
 
     case "$choice" in

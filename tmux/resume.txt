@@ -1,0 +1,170 @@
+Resume created on: Thu Jun 25 21:00:25 CEST 2026 over /home/akash/Tools/tmux:
+================
+.
+├── basic
+├── dark.tmux
+├── light.tmux
+├── resume.txt
+├── theme.tmux -> /home/akash/Tools/tmux/light.tmux
+├── tmux.conf
+└── work
+
+1 directory, 7 files
+================
+
+./basic
+----------------
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Sun 24. May 2026
+#
+# Purpose:      Creates the whole tmux workspace for scientific reasearch.
+# =============================================================================
+
+SESSION="basic"
+
+if ! tmux has-session -t "$SESSION" 2>/dev/null; then
+
+    # Window 1: mail
+    tmux new-session -d -s "$SESSION" -n mail
+    tmux send-keys -t "$SESSION":mail 'aerc' C-m
+
+    # Window 2: monitoring
+    tmux new-window -t "$SESSION" -n news
+    tmux send-keys -t "$SESSION":news 'news' C-m
+
+    # Window 3: todo
+    tmux new-window -t "$SESSION" -n todo
+    tmux send-keys -t "$SESSION":todo 'vim ~/Notes/ToDo.md' C-m
+
+    # Focus
+    tmux select-window -t "$SESSION":mail
+
+fi
+
+exec tmux attach-session -t "$SESSION"
+
+
+
+./work
+----------------
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Sun 24. May 2026
+#
+# Purpose:      Creates the whole tmux workspace for scientific reasearch.
+# =============================================================================
+
+SESSION="work"
+
+if ! tmux has-session -t "$SESSION" 2>/dev/null; then
+
+    # Window 1: Tools
+    tmux new-session -d -s "$SESSION" -n Tools
+    tmux send-keys -t "$SESSION":Tools 'cd ~/Tools/' C-m
+
+    # Window 2: Codes
+    tmux new-window -t "$SESSION" -n Codes
+    tmux send-keys -t "$SESSION":Codes 'cd ~/Codes/' C-m
+
+    # Window 3: Exercices
+    tmux new-window -t "$SESSION" -n Exercices
+    tmux send-keys -t "$SESSION":Exercices 'cd ~/Exercices/' C-m
+
+    # Window 4: Notes
+    tmux new-window -t "$SESSION" -n Notes
+    tmux send-keys -t "$SESSION":Notes 'cd ~/Notes/' C-m
+
+    # Focus
+    tmux select-window -t "$SESSION":Notes
+
+fi
+
+exec tmux attach-session -t "$SESSION"
+
+
+
+./tmux.conf
+----------------
+# RELOAD
+bind r source-file ~/.tmux.conf
+
+# NUMBER CONFIGURATION
+set -g base-index 1
+setw -g pane-base-index 1
+set -g renumber-windows on
+
+# SUPPORT
+set -g mouse on
+set -g mode-keys vi
+set -g focus-events on
+set -g history-limit 50000
+set -s escape-time 0
+
+# CUSTOM
+set -g default-terminal "${TERM}"
+set -as terminal-overrides ',*:Smulx=\E[4::%p1%dm'  # undercurl support
+set -as terminal-overrides ',*:Setulc=\E[58::2::::%p1%{65536}%/%d::%p1%{256}%/%{255}%&%d::%p1%{255}%&%d%;m'  # underscore colours - needs tmux-3.0
+set -g default-terminal "tmux-256color"
+set -ga terminal-overrides ",*:RGB"
+set -g allow-passthrough on
+set -g monitor-activity on
+
+# BAR STATUS
+set -g status-interval 5
+set -g status-position top
+set -g bell-action any
+set -g visual-bell on
+set -g status-left-length  40
+set -g status-right-length  30
+# set -g status-style fg=black,bg=green
+# set -g status-left "#[fg=black,bg=magenta] < #S > #[fg=black,bold,bg=green] "
+# set -g status-right "#[fg=blue,bold,bg=black]  %H:%M  #[fg=white,bold]%d/%m/%Y #[fg=red] #(cat /sys/class/power_supply/BAT0/capacity)%% "
+
+# BINDINGS
+# unbind C-b
+# set -g prefix C-w
+# bind-key C-w send-prefix
+unbind '"'
+unbind %
+bind | split-window -h
+bind - split-window -v
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+source-file ~/.config/tmux/theme.tmux
+
+
+
+./light.tmux
+----------------
+# set -g status-style fg=black,bg=white
+set -g pane-border-style fg=#cccccc
+set -g pane-active-border-style fg=#4c7dff
+
+set -g status-style fg=black,bg=green
+set -g status-left "#[fg=black,bg=magenta] < #S > #[fg=black,bold,bg=green] "
+set -g status-right "#[fg=blue,bold,bg=white]  %H:%M  #[fg=black,bold]%d/%m/%Y #[fg=red] #(cat /sys/class/power_supply/BAT0/capacity)%% "
+
+
+
+./dark.tmux
+----------------
+# set -g status-style fg=black,bg=green
+set -g pane-border-style fg=#3b4261
+set -g pane-active-border-style fg=#7aa2f7
+
+set -g status-style fg=black,bg=green
+set -g status-left "#[fg=black,bg=magenta] < #S > #[fg=black,bold,bg=green] "
+set -g status-right "#[fg=blue,bold,bg=black]  %H:%M  #[fg=white,bold]%d/%m/%Y #[fg=red] #(cat /sys/class/power_supply/BAT0/capacity)%% "
+
+
+

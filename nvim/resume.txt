@@ -1,4 +1,4 @@
-Resume created on: Thu Jun 18 00:45:01 CEST 2026 over /home/akash/.config/nvim:
+Resume created on: Mon Jun 29 15:43:18 CEST 2026 over /home/akash/.config/nvim:
 ================
 .
 ├── init.lua
@@ -22,13 +22,18 @@ Resume created on: Thu Jun 18 00:45:01 CEST 2026 over /home/akash/.config/nvim:
 │   │   ├── typst.lua
 │   │   ├── ui.lua
 │   │   └── writing.lua
-│   └── snippets
-│       ├── python.lua
-│       ├── sh.lua
-│       └── typst.lua
+│   ├── snippets
+│   │   ├── python.lua
+│   │   ├── sh.lua
+│   │   └── typst.lua
+│   └── theme
+│       ├── current.lua -> /home/akash/.config/nvim/lua/theme/light.lua
+│       ├── dark.lua
+│       ├── light.lua
+│       └── theme.lua
 └── resume.txt
 
-5 directories, 22 files
+6 directories, 26 files
 ================
 
 ./init.lua
@@ -41,7 +46,8 @@ require("config.terminal")
 
 require("config.lazy")
 
-vim.cmd[[colorscheme tokyonight-night]]
+require("theme.theme")
+
 
 
 
@@ -254,16 +260,17 @@ return {
             vim.keymap.set("n", "<C-n>", ":Neotree toggle<CR>", { silent = true })
         end,
     },
-    {
-      "nvim-lualine/lualine.nvim",
-      opts = {
-        options = {
-          theme = "auto",
-          section_separators = "",
-          component_separators = "",
-        }
-      }
-    },
+    -- {
+    --   "nvim-lualine/lualine.nvim",
+    --   opts = {
+    --       options = {
+    --           icons_enabled = false,
+    --           theme = "auto",
+    --           section_separators = "",
+    --           component_separators = "",
+    --       }
+    --   }
+    -- },
     {
       "folke/tokyonight.nvim",
       lazy = false,
@@ -339,6 +346,13 @@ return {
             },
         },
     },
+    {
+      "NvChad/nvim-colorizer.lua",
+      event = "VeryLazy",
+      config = function()
+        require("colorizer").setup()
+      end,
+    },
 }
 
 
@@ -383,7 +397,18 @@ return {
 ----------------
 return {
     {
-      "folke/flash.nvim",
+        "folke/flash.nvim",
+        event = "VeryLazy",
+        opts = {},
+        keys = {
+            {
+                "s",
+                function()
+                    require("flash").jump()
+                end,
+                mode = { "n", "x", "o" },
+            },
+        },
     },
     {
         "lukas-reineke/indent-blankline.nvim",
@@ -399,6 +424,16 @@ return {
         event = "VeryLazy",
         config = function()
             require("nvim-surround").setup({})
+        end,
+    },
+    {
+        "echasnovski/mini.pairs",
+        event="InsertEnter",
+
+        config=function()
+
+            require("mini.pairs").setup()
+
         end,
     },
 }
@@ -436,6 +471,10 @@ return {
             vim.keymap.set("n", "<leader>fh", builtin.help_tags)
         end,
     },
+    {
+        "nvim-telescope/telescope-fzf-native.nvim",
+        build = "make",
+    },
 }
 
 
@@ -469,6 +508,55 @@ return {
             -- Aquí va la configuración que pegaste del README
         end
     },
+    {
+      "echaya/neowiki.nvim",
+      opts = {
+        wiki_dirs = {
+          -- neowiki.nvim supports both absolute and tilde-expanded paths
+          { name = "Notes", path = "~/Notes/" },
+          { name = "Codes", path = "~/Codes/" },
+          { name = "Exercices", path = "~/Exercices/" },
+        },
+      },
+      keys = {
+          { "<leader>ww", function() require("neowiki").open_wiki() end, desc="Wiki" },
+          { "<leader>wf", function() require("neowiki").open_wiki_floating() end, desc="Wiki Float" },
+          { "<leader>wt", function() require("neowiki").open_wiki_new_tab() end, desc="Wiki Tab" },
+      }},
+    {
+        "folke/which-key.nvim",
+        event = "VeryLazy",
+
+        opts = {
+            preset = "default",
+            delay = 300,
+            icons = {
+                mappings = false,
+            },
+        },
+    },
+    {
+        "folke/snacks.nvim",
+        priority = 1000,
+        lazy = false,
+        opts = {
+            picker = {
+                enabled = true,
+            },
+            explorer = {
+                enabled = true,
+            },
+            notifier = {
+                enabled = true,
+            },
+            dashboard = {
+                enabled = true,
+            },
+            terminal = {
+                enabled = true,
+            },
+        },
+    },
 }
 
 
@@ -496,6 +584,18 @@ return {
     i(0)
   }, {
     description = "Bash block separator"
+  }),
+  --
+  -- if __name__=="__main__":
+  -- ...
+  s("ifname", fmt([[
+  if ! (return 2>/dev/null); then
+      {}
+  fi
+  ]], {
+    i(1, "Command"),
+  }), {
+    description = "if name in bash"
   }),
   --
 }
@@ -652,6 +752,32 @@ return {
 
 
 
+./lua/theme/dark.lua
+----------------
+vim.o.background = "dark"
+vim.cmd.colorscheme("sorbet")
+
+
+
+./lua/theme/theme.lua
+----------------
+-- ~/.config/nvim/lua/theme/theme.lua
+
+local ok, err = pcall(require, "theme.current")
+
+if not ok then
+    vim.notify("Theme load failed: " .. tostring(err), vim.log.levels.ERROR)
+end
+
+
+
+./lua/theme/light.lua
+----------------
+vim.o.background = "light"
+vim.cmd.colorscheme("morning")
+
+
+
 ./lua/config/keymaps.lua
 ----------------
 local map = vim.keymap.set
@@ -753,30 +879,13 @@ autocmd("BufReadPost", {
 -- ============================================================================
 -- NOTEBOOK STYLE CELL HIGHLIGHT (# %%)
 -- ============================================================================
--- local cell_group = augroup("NotebookCells", { clear = true })
---
--- autocmd("FileType", {
---     group = cell_group,
---     pattern = { "python", "sh", "bash" },
---     callback = function()
---
---         vim.cmd([[
---             syntax match NotebookCell "^# %%.*$"
---         ]])
---
---         vim.api.nvim_set_hl(0, "NotebookCell", {
---             fg = "#ffffff",
---             bg = "#7a3fc7",
---             bold = true,
---         })
---     end,
--- })
 
 autocmd("FileType", {
     group = cell_group,
     pattern = { "python", "sh", "bash" },
     callback = function()
-        vim.fn.matchadd("NotebookCell", "^# %%.*$")
+        -- vim.fn.matchadd("NotebookCell", "^# %%.*$")
+        vim.fn.matchadd("NotebookCell", [[^\s*# %%.*$]])
     end,
 })
 
@@ -885,6 +994,15 @@ autocmd("BufNewFile", {
 -- F5 EXECUTION
 -- ============================================================================
 autocmd("FileType", {
+    pattern = "gnuplot",
+    callback = function()
+        vim.keymap.set("n", "<F5>", function()
+            vim.cmd("w")
+            vim.cmd("gnuplot %")
+        end, { buffer = true })
+    end,
+})
+autocmd("FileType", {
     pattern = "python",
     callback = function()
         vim.keymap.set("n", "<F5>", function()
@@ -989,8 +1107,8 @@ opt.guicursor = "n-v-c:block,i:ver25"
 
 vim.g.mapleader = "\\"
 
-opt.background = "dark"
-vim.cmd.colorscheme("sorbet")
+-- opt.background = "dark"
+-- vim.cmd.colorscheme("sorbet")
 
 
 

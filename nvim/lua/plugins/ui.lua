@@ -21,16 +21,17 @@ return {
             vim.keymap.set("n", "<C-n>", ":Neotree toggle<CR>", { silent = true })
         end,
     },
-    {
-      "nvim-lualine/lualine.nvim",
-      opts = {
-        options = {
-          theme = "auto",
-          section_separators = "",
-          component_separators = "",
-        }
-      }
-    },
+    -- {
+    --   "nvim-lualine/lualine.nvim",
+    --   opts = {
+    --       options = {
+    --           icons_enabled = false,
+    --           theme = "auto",
+    --           section_separators = "",
+    --           component_separators = "",
+    --       }
+    --   }
+    -- },
     {
       "folke/tokyonight.nvim",
       lazy = false,
@@ -105,5 +106,12 @@ return {
                 enabled = false, -- Desactiva si no trabajas con documentación web
             },
         },
+    },
+    {
+      "NvChad/nvim-colorizer.lua",
+      event = "VeryLazy",
+      config = function()
+        require("colorizer").setup()
+      end,
     },
 }

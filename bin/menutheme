@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Roman Garcia Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Thu 04. Dec 2025
+#
+# Purpose:      Select and apply a desktop theme.
+# =============================================================================
+
+set -euo pipefail
+
+source "$HOME/.config/bemenu/theme.sh"
+
+THEME_SCRIPT="$HOME/Tools/bin/theme"
+
+select_theme() {
+    printf '%s\n' \
+        light \
+        dark |
+    bemenu \
+        "${BEMENU_OPTS[@]}" \
+        --width-factor 0.10 \
+        -p "Theme:"
+}
+
+main() {
+    local choice
+    choice="$(select_theme)" || exit 1
+    [[ -z "$choice" ]] && exit 0
+    "$THEME_SCRIPT" "$choice"
+}
+
+if ! (return 2>/dev/null); then
+    main
+fi

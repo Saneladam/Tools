@@ -1,0 +1,1 @@
+/home/akash/Tools/tmux/dark.tmux

@@ -452,7 +452,7 @@ return {
   }),
 
   -- Docstring Numpy style
-  s("docnumpy", fmt([[
+  s("documentation", fmt([[
   """{}
   
   Parameters

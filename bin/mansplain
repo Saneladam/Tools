@@ -9,17 +9,26 @@
 #               with zathura.
 # =============================================================================
 
-#!/bin/bash
+source "$HOME/.config/bemenu/theme.sh"
 
 choice=$(
-  man -k . \
-  | awk -F' ' '{print $1 " " $2}' \
-  | wmenu -i -l 25 -p "Manuals:"
+    man -k . \
+        | sort \
+        | bemenu "${BEMENU_OPTS[@]}" -p "Manual:"
 ) || exit 1
 
-cmd=$(echo "$choice" | awk '{print $1}')
+[ -z "$choice" ] && exit 0
 
-[ -z "$cmd" ] && exit 0
+# Extraer nombre
+name=$(sed -E 's/^([^(]+)\(.*/\1/' <<< "$choice")
 
-man -Tpdf "$cmd" | zathura -
+# Extraer sección
+section=$(sed -E 's/^[^(]+\(([^)]+)\).*/\1/' <<< "$choice")
 
+# Algunas páginas aparecen como:
+# (3const, 3head, 3type)
+# Nos quedamos con la primera.
+section=${section%%,*}
+section=$(echo "$section" | tr -d ' ')
+
+man -Tpdf "$section" "$name" | zathura -

@@ -13,6 +13,8 @@ TERMINAL="alacritty"
 README_DIR="$HOME/Resources/Books/README.md"
 folders="$HOME/Resources"
 
+source ~/.config/bemenu/theme.sh
+
 selected () {
 
     choice=$(
@@ -25,7 +27,7 @@ selected () {
                 | sort -nr \
                 | cut -d' ' -f2-
         } \
-        | wmenu -i -l 25 -p "Select the Reading Material:"
+        | bemenu "${BEMENU_OPTS[@]}" --width-factor 0.6 -p "Select the Reading Material:"
     ) || exit 1
 
     case "$choice" in

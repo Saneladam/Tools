@@ -1,0 +1,123 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Thu 28. May 2026
+#
+# Purpose:      Creates change in the theme
+# =============================================================================
+
+
+change_mako() {
+    case $1 in
+        dark)
+            ln -sfn \
+                ~/.config/mako/dark.conf \
+                ~/.config/mako/config
+            ;;
+        light)
+            ln -sfn \
+                ~/.config/mako/light.conf \
+                ~/.config/mako/config
+            ;;
+    esac
+    makoctl reload
+}
+change_bemenu() {
+    case $1 in
+        dark)
+            ln -sfn \
+                ~/.config/bemenu/dark.sh \
+                ~/.config/bemenu/theme.sh
+            ;;
+        light)
+            ln -sfn \
+                ~/.config/bemenu/light.sh \
+                ~/.config/bemenu/theme.sh
+            ;;
+    esac
+}
+change_alacritty() {
+    case $1 in
+        dark)
+            ln -sfn \
+                ~/.config/alacritty/dark.toml \
+                ~/.config/alacritty/current.toml
+            ;;
+        light)
+            ln -sfn \
+                ~/.config/alacritty/light.toml \
+                ~/.config/alacritty/current.toml
+            ;;
+    esac
+}
+change_nvim() {
+    case $1 in
+        dark)
+            ln -sfn \
+                ~/.config/nvim/lua/theme/dark.lua \
+                ~/.config/nvim/lua/theme/current.lua
+            ;;
+        light)
+            ln -sfn \
+                ~/.config/nvim/lua/theme/light.lua \
+                ~/.config/nvim/lua/theme/current.lua
+            ;;
+    esac
+}
+change_tmux() {
+    case $1 in
+        dark)
+            ln -sfn \
+                ~/Tools/tmux/dark.tmux \
+                ~/Tools/tmux/theme.tmux
+            ;;
+        light)
+            ln -sfn \
+                ~/Tools/tmux/light.tmux \
+                ~/Tools/tmux/theme.tmux
+            ;;
+    esac
+    tmux source-file ~/.tmux.conf 2>/dev/null
+}
+change_qutebrowser() {
+    case $1 in
+        dark)
+            ln -sfn \
+                ~/.config/qutebrowser/dark.py \
+                ~/.config/qutebrowser/theme.py
+            ;;
+        light)
+            ln -sfn \
+                ~/.config/qutebrowser/light.py \
+                ~/.config/qutebrowser/theme.py
+            ;;
+    esac
+}
+change_prompt() {
+    case $1 in
+        dark)
+            ln -sfn \
+                ~/Tools/sh/dark.theme \
+                ~/Tools/sh/current.theme
+            ;;
+        light)
+            ln -sfn \
+                ~/Tools/sh/light.theme \
+                ~/Tools/sh/current.theme
+            ;;
+    esac
+    source "$HOME/.bashrc"
+}
+
+
+change_mako $1
+change_bemenu $1
+change_alacritty $1
+change_nvim $1
+change_tmux $1
+# change_qutebrowser $1
+change_prompt $1
+
+notify-send "Theme update" "Now in $1 mode"

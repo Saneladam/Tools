@@ -8,25 +8,31 @@
 # Purpose:      Changes the default of the touchpad option in the sway config. 
 # =============================================================================
 
+set -euo pipefail
+
+CONFIG="$HOME/.config/sway/config"
+
+# state=$(
+#     swaymsg -t get_inputs -r |
+#     jq -r '.[] | select(.type=="touchpad") | .libinput.tap'
+# )
 state=$(
-    swaymsg -t get_inputs \
-    | grep -A20 Touchpad \
-    | grep tap
+    swaymsg -t get_inputs -r |
+    jq -r '.[] | select(.type=="touchpad") | .libinput.tap' |
+    head -n1
 )
+printf '<%s>\n' "$state"
 
-if echo "$state" | grep -q enabled; then
+if [[ "$state" == enabled ]]; then
     swaymsg input type:touchpad tap disabled
-
-    notify-send \
-        -t 2000 \
-        "Touchpad" \
-        "Tap disabled"
-
+    sed -i \
+        's/^[[:space:]]*tap enabled/tap disabled/' \
+        "$CONFIG"
+    notify-send "Touchpad" "Tap disabled"
 else
     swaymsg input type:touchpad tap enabled
-
-    notify-send \
-        -t 2000 \
-        "Touchpad" \
-        "Tap enabled"
+    sed -i \
+        's/^[[:space:]]*tap disabled/tap enabled/' \
+        "$CONFIG"
+    notify-send "Touchpad" "Tap enabled"
 fi

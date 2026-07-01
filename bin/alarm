@@ -40,7 +40,7 @@ def notify(title, message):
         pass
 def beep():
     try:
-        subprocess.run(["beep"])
+        subprocess.run(["paplay", "/usr/share/sounds/freedesktop/stereo/complete.oga"])
     except Exception:
         pass
 def activate():
@@ -48,7 +48,6 @@ def activate():
         subprocess.run(["sudo modprobe pcspkr"])
     except Exception:
         pass
-
 
 # ---------------------------
 # non-blocking key read

@@ -42,7 +42,7 @@ function git_acp() {
     fi
     git push
     echo "---------------------------------------------------"
-    echo "All done daddy ;)"
+    echo "All done Sir ;)"
     echo ""
 }
 

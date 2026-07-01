@@ -3,12 +3,11 @@
 # =============================================================================
 # Authors:      Román García Guill
 # Contact:      romangarciaguill@gmail.com
-# Created:      Thu 28. May 2026
+# Created:      Thu 25. Jun 2026
 #
-# Purpose:      Creates change in the theme
+# Purpose:      Creates and wrapps the menu controller. 
 # =============================================================================
 
+source "$HOME/.config/bemenu/theme.sh"
 
-for type in case:
-    light)
-        ln ~/Builds/tokyonight.nvim/extras/alacritty/tokyonight_day.toml ~/.config/alacritty/theme.toml
+bemenu-run "${BEMENU_OPTS[@]}" -p "Choose a bin to execute"
