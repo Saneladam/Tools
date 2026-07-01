@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Wed 28. Jan 2026
+#
+# Purpose:      shows the definition of a word 
+# =============================================================================
+
+word=${1:-$(wl-paste --no-newline)}
+query=$(curl -s "https://api.dictionaryapi.dev/api/v2/entries/en_US/$word")
+[ -z "$query" ] && notify-send -t 3000 "Invalid word." && exit 0
+
+def=$(echo "$query" | jq -r '.[0].meanings[] | "\(.partOfSpeech): \(.definitions[0].definition)\n"')
+
+notify-send -t 10000 "$word -" "$def"

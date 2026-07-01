@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Roman Garcia Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Thu 04. Dec 2025
+#
+# Purpose:      Select between different shutdown options.
+# =============================================================================
+
+selected () { 
+  choice=$(echo -e "Shut Down\nReboot\nSuspend\nTerminate User" | dmenu -c -nb '#000000' -nf '#ffffff' -cb '#ff0000' -cf '#ffffff' -sb '#ff0000' -sf '#ffffff' -l 25 -p "Power-off Options: ") || exit 1
+  case $choice in
+          "Shut Down") systemctl poweroff ;;
+          "Reboot") systemctl reboot ;;
+          "Suspend") systemctl suspend ;;
+          *) exit ;;
+  esac
+}
+
+selected
