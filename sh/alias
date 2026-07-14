@@ -20,6 +20,7 @@ alias vim='nvim'
 # Directories
 alias setwork='pwd > ~/.workdir'
 alias gowork='cd $(cat ~/.workdir)'
+alias gw=gowork
 alias .2='../..'
 alias .3='../../..'
 alias .4='../../../..'

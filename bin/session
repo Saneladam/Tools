@@ -1,0 +1,229 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Tue 14. Jul 2026
+#
+# Purpose:      Executes session preparation and session closure for the day.
+# =============================================================================
+
+set -euo pipefail
+
+REPOS=(
+    "$HOME/Codes"
+    "$HOME/Documents/MasterThesis"
+    "$HOME/Exercices"
+    "$HOME/Notes"
+    "$HOME/Tools"
+)
+
+BACKUP_DIR="$HOME/backups"
+BACKUP_DRIVE="/mnt/backup"
+
+###############################################################################
+# Printing
+###############################################################################
+
+section()
+{
+    printf "\n%s\n" "$1"
+    printf "%s\n" "------------------------------------------------------------"
+}
+
+###############################################################################
+# System
+###############################################################################
+
+system_check()
+{
+    section "System"
+
+    printf "%-16s %s\n" "Hostname"  "$(hostname)"
+    printf "%-16s %s\n" "Kernel"    "$(uname -r)"
+    printf "%-16s %s\n" "Uptime"    "$(uptime -p)"
+
+    echo
+    df -h "$HOME"
+    echo
+    free -h
+}
+
+###############################################################################
+# Git
+###############################################################################
+
+git_pull()
+{
+    section "Repositories"
+
+    for repo in "${REPOS[@]}"; do
+
+        printf "%-24s" "$(basename "$repo")"
+
+        if ! git -C "$repo" rev-parse --git-dir >/dev/null 2>&1; then
+            echo "not a repository"
+            continue
+        fi
+
+        if ! git -C "$repo" diff --quiet ||
+           ! git -C "$repo" diff --cached --quiet; then
+            echo "local changes"
+            continue
+        fi
+
+        output=$(git -C "$repo" pull --ff-only 2>&1 || true)
+
+        case "$output" in
+            *"Already up to date"*)
+                echo "up to date"
+                ;;
+            *"Fast-forward"*)
+                echo "updated"
+                ;;
+            *)
+                echo "done"
+                ;;
+        esac
+    done
+}
+
+###############################################################################
+# Notes
+###############################################################################
+
+notes_prepare()
+{
+    section "Notes"
+
+    TODAY="$HOME/Notes/$(date +%F).md"
+
+    if [ ! -f "$TODAY" ]; then
+        touch "$TODAY"
+        echo "created $(basename "$TODAY")"
+    else
+        echo "opened $(basename "$TODAY")"
+    fi
+}
+
+###############################################################################
+# Environment
+###############################################################################
+
+environment_start()
+{
+    section "Environment"
+
+    # if tmux has-session -t plasma 2>/dev/null; then
+    #     alacritty -e tmux attach -t plasma &
+    #     echo "attached tmux session"
+    #     return
+    # fi
+    # if [ -f "$HOME/.tmuxp/plasma.yaml" ]; then
+    #     tmuxp load plasma
+    #     echo "created tmux session"
+    #     return
+    # fi
+
+    echo "creating empty session"
+    tmux new-session -d -s zero
+    alacritty -e tmux attach -t zero &
+}
+
+###############################################################################
+# Summary
+###############################################################################
+
+summary_start()
+{
+    section "Ready"
+
+    printf "%s\n" "$(date)"
+}
+
+###############################################################################
+# End
+###############################################################################
+
+save_everything()
+{
+    section "Saving"
+
+    history -a 2>/dev/null || true
+}
+
+git_push()
+{
+    section "Repositories"
+
+    for repo in "${REPOS[@]}"; do
+
+        git -C "$repo" rev-parse --git-dir >/dev/null 2>&1 || continue
+
+        git -C "$repo" add -A
+
+        if git -C "$repo" diff --cached --quiet; then
+            printf "%-24s no changes\n" "$(basename "$repo")"
+            continue
+        fi
+
+        git -C "$repo" commit \
+            -m "Daily backup $(date '+%F %H:%M')"
+
+        git -C "$repo" push
+
+        printf "%-24s committed\n" "$(basename "$repo")"
+    done
+}
+
+backup()
+{
+    section "Backup"
+
+    echo "not implemented"
+}
+
+stats()
+{
+    section "Statistics"
+
+    printf "%-16s %s\n" "Time" "$(date)"
+}
+
+summary_end()
+{
+    section "Finished"
+
+    echo "Session closed."
+}
+
+###############################################################################
+# Commands
+###############################################################################
+
+start()
+{
+    system_check
+    git_pull
+    notes_prepare
+    environment_start
+    summary_start
+}
+
+end()
+{
+    save_everything
+    git_push
+    backup
+    stats
+    summary_end
+}
+
+case "${1:-}" in
+    start) start ;;
+    end)   end ;;
+    *)
+        echo "Usage: session {start|end}"
+        exit 1
+        ;;
+esac

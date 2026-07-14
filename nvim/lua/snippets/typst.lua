@@ -134,10 +134,12 @@ return {
       outset: 5pt,
       radius: 5pt,
       width: 100%,
-      text()[{}]
+      text()[
+        / Problem {}:
+      ]
       )
     ]], {
-        i(1, "Inside the Box"),
+        i(1, ""),
     }), {
         description = "Red Typst box"
     }),

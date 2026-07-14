@@ -25,3 +25,6 @@ for repo in "${REPOS[@]}"; do
     echo "$repo was pulled"
 done
 echo "COMPLETED git pull"
+
+alacritty -e tmux attach -t main
+tmuxp load plasma

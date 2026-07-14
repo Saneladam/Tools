@@ -27,3 +27,17 @@ for repo in "${REPOS[@]}"; do
     echo "-->$repo was pushed"
 done
 echo "COMPLETED"
+
+git status --short
+
+rsync -avh \
+    "$HOME/Notes/" \
+    "$BACKUP_DRIVE/Notes/"
+tar -czf \
+"$HOME/backups/notes_$(date +%F).tar.gz" \
+"$HOME/Notes"
+
+Lines of code written today
+Commits today
+Notes modified
+Papers read
