@@ -28,22 +28,62 @@ function mailme() {
   echo "$body" | mail -s "$subject" romangarciaguill@gmail.com
 }
 
-function git_acp() {
-    echo ""
+# Git add-commit-push seguro
+git_acp() {
+    # Debe ejecutarse dentro de un repositorio Git
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+        echo "Not inside a Git repository"
+        return 1
+    }
+
+    # No permitir estados peligrosos
+    git symbolic-ref -q HEAD >/dev/null || {
+        echo "Detached HEAD: finish or abort the rebase/checkout first"
+        return 1
+    }
+
+    [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ] && {
+        echo "Rebase in progress"
+        return 1
+    }
+
+    git rev-parse -q --verify MERGE_HEAD >/dev/null && {
+        echo "Merge in progress"
+        return 1
+    }
+
+    echo
     echo "Git add-commit-push in $(pwd)"
     echo "---------------------------------------------------"
     ls
     echo "---------------------------------------------------"
-    git add .
-    if [ -z $1 ]; then
-        git commit -m "$(date)"
-    else
-        git commit -m "$(echo $1)"
+
+    # Traer cambios remotos y rebasar automáticamente
+    git fetch origin
+    git pull --rebase --autostash
+
+    # Añadir cambios
+    git add -A
+
+    # Si no hay cambios, salir limpiamente
+    if git diff --cached --quiet; then
+        echo "No changes to commit"
+        return 0
     fi
-    git push
+
+    # Commit
+    if [ $# -eq 0 ]; then
+        git commit -m "$(date '+%F %T %Z')"
+    else
+        git commit -m "$*"
+    fi
+
+    # Push
+    git push origin "$(git branch --show-current)"
+
     echo "---------------------------------------------------"
-    echo "All done Sir ;)"
-    echo ""
+    echo "All done"
+    echo
 }
 
 function define() {
