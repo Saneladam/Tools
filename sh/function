@@ -116,11 +116,3 @@ function foam() {
 function wiki() {
     wiki-tui $1
 }
-
-function work() {
-    ~/Tools/tmux/work
-}
-
-function basic() {
-    ~/Tools/tmux/basic
-}

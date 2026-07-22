@@ -1,5 +1,4 @@
-
-# COMPINSTALL
+# ZSH APPS COMPINSTALL
 zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate
 zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]} m:{[:lower:][:upper:]}={[:upper:][:lower:]} r:|[.]=* r:|=*' 'm:{[:lower:]}={[:upper:]} m:{[:lower:][:upper:]}={[:upper:][:lower:]}'
 zstyle :compinstall filename '/home/r/.zshrc'
@@ -12,10 +11,26 @@ setopt extendedglob notify
 unsetopt beep
 bindkey -v
 
-# Call the alias file
-source ~/Tools/sh/alias
-source ~/Tools/sh/function
-source ~/.cargo/env
+# source "$HOME/Tools/sh/current.theme"
+show_shell_variables() {
+
+}
+# PS1="%F{#008000}[%T]<%L>%K{3a3a3a}%n@%m%k %S%1~:(%j)%s "
+PROMPT='%F{red}%n⚛%m %f%F{green}%~%f '
+PS2='... '
+PS3='::: '
+PS4='+ ${BASH_SOURCE}:${LINENO}: '
+# Prompt
+autoload -Uz colors && colors
+setopt prompt_subst
+
+# Variables
+export EDITOR="nvim"
+export VISUAL="nvim"
+export BROWSER="qutebrowser"
+export TERMINAL="foot"
+export MANPAGER='nvim +Man'
+export GPG_TTY=$(tty)
 
 # Path
 export PATH="$HOME/Tools/bin:$PATH"
@@ -24,18 +39,12 @@ export PATH="$HOME/.local/bin:$PATH"
 # Python PATHS
 export PYTHONPATH="$HOME/Tools/python:$PYTHONPATH"
 
-# Prompt
-autoload -Uz colors && colors
-setopt prompt_subst
-PROMPT='%F{red}%n@%m %F{blue}%~ %f⚛ '
-#PROMPT='%F{red}%n⚛%F{blue}%~ %f %🐧 '
-
-
-# Zoxide: smart directory jumping
-eval "$(zoxide init zsh)"
-export EDITOR="vim"
-export VISUAL="vim"
-export GPG_TTY=$(tty)
+# Sourcing files
+source $HOME/Tools/sh/alias
+source $HOME/Tools/sh/analysis
+source $HOME/Tools/sh/function
+[ -f $HOME/.cargo/env ] && source $HOME/.cargo/env
+# source $HOME/Tools/sh/bash-bindings
 
 # Vim bindkeys
 bindkey -M vicmd '^[[1;5D' backward-word
@@ -51,29 +60,30 @@ bindkey -M vicmd "^[[3;5~" kill-word
 bindkey -M viins '^H' backward-kill-word
 bindkey -M vicmd '^H' backward-kill-word
 
+export PROMPT_COMMAND="history -a"
+
 ###############################################################################
+#
+# Other Apps
+#
 ###############################################################################
-###############################################################################
-# >>> mamba initialize >>>
-# !! Contents within this block are managed by 'micromamba shell init' !!
-export MAMBA_EXE='/home/r/.local/bin/micromamba';
-export MAMBA_ROOT_PREFIX='/home/r/micromamba';
-__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__mamba_setup"
-else
-    alias micromamba="$MAMBA_EXE"  # Fallback on help from micromamba activate
-fi
-unset __mamba_setup
-# <<< mamba initialize <<<
 
 # --- pyenv (MUST be early in PATH) ---
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init --path)"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-eval "$(direnv hook zsh)"
-###############################################################################
-###############################################################################
-###############################################################################
+pyenv() {
+    unset -f pyenv
+    eval "$(command pyenv init -)"
+    pyenv "$@"
+}
+
+# --- Zoxide  ---
+eval "$(zoxide init zsh)"
+. "$HOME/.cargo/env"
+
+# --- OpenFOAM  ---
+export WM_PROJECT_DIR=/opt/OpenFOAM/OpenFOAM-13
+
+# --- openmpi  ---
+export PATH=/usr/lib/openmpi/bin:$PATH
+export LD_LIBRARY_PATH=/usr/lib/openmpi/lib:$LD_LIBRARY_PATH

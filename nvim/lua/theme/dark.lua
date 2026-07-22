@@ -1,2 +1,2 @@
 vim.o.background = "dark"
-vim.cmd.colorscheme("sorbet")
+vim.cmd.colorscheme("zaibatsu")

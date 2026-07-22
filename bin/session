@@ -206,7 +206,7 @@ start()
     system_check
     git_pull
     notes_prepare
-    environment_start
+    # environment_start
     summary_start
 }
 

@@ -52,6 +52,21 @@ change_alacritty() {
             ;;
     esac
 }
+change_foot() {
+    case $1 in
+        dark)
+            ln -sfn \
+                /usr/share/foot/themes/modus-vivendi-tinted \
+                $HOME/.config/foot/current_theme
+            ;;
+        light)
+            ln -sfn \
+                /usr/share/foot/themes/modus-operandi \
+                $HOME/.config/foot/current_theme
+            ;;
+    esac
+    pkill -USR1 foot
+}
 change_nvim() {
     case $1 in
         dark)
@@ -111,13 +126,19 @@ change_prompt() {
     source "$HOME/.bashrc"
 }
 
-
-change_mako $1
-change_bemenu $1
-change_alacritty $1
-change_nvim $1
-change_tmux $1
-# change_qutebrowser $1
-change_prompt $1
-
-notify-send "Theme update" "Now in $1 mode"
+case $1 in
+    dark|light)
+        change_mako $1
+        change_bemenu $1
+        change_alacritty $1
+        change_foot $1
+        change_nvim $1
+        change_tmux $1
+        # change_qutebrowser $1
+        change_prompt $1
+        notify-send "Theme update" "Now in $1 mode"
+        ;;
+    *)
+        notify-send "Theme ERROR" "Only 'dark' or 'light' modes available"
+        ;;
+esac

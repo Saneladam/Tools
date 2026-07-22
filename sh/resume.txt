@@ -1,0 +1,565 @@
+Resume created on: Mon Jul 20 18:50:36 CEST 2026 over /home/akash/Tools/sh:
+================
+.
+├── alias
+├── analysis
+├── bash-bindings
+├── bashrc
+├── current.theme -> /home/akash/Tools/sh/dark.theme
+├── dark.theme
+├── function
+├── laptop-tty
+├── light.theme
+├── resume.txt
+├── zsh-bindings
+└── zshrc
+
+1 directory, 12 files
+================
+
+./function
+----------------
+# Functionality
+function extract() {
+  if [ -f $1 ]; then
+    case $1 in
+      *.tar.bz2)   tar xjf $1     ;;
+      *.tar.gz)    tar xzf $1     ;;
+      *.tar.xz)    tar xJf $1     ;;
+      *.bz2)       bunzip2 $1     ;;
+      *.rar)       unrar e $1     ;;
+      *.gz)        gunzip $1      ;;
+      *.tar)       tar xf $1      ;;
+      *.tbz2)      tar xjf $1     ;;
+      *.tgz)       tar xzf $1     ;;
+      *.zip)       unzip $1       ;;
+      *.Z)         uncompress $1  ;;
+      *.7z)        7z x $1        ;;
+      *)           echo "'$1' cannot be extracted via extract" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
+# Connectivity
+function mailme() {
+  local subject="AUTOMAIL: $1"
+  local body="$2"
+  echo "$body" | mail -s "$subject" romangarciaguill@gmail.com
+}
+
+function git_acp() {
+    echo ""
+    echo "Git add-commit-push in $(pwd)"
+    echo "---------------------------------------------------"
+    ls
+    echo "---------------------------------------------------"
+    git add .
+    if [ -z $1 ]; then
+        git commit -m "$(date)"
+    else
+        git commit -m "$(echo $1)"
+    fi
+    git push
+    echo "---------------------------------------------------"
+    echo "All done Sir ;)"
+    echo ""
+}
+
+function define() {
+	local word=$1
+	curl dict.org/d:$word
+}
+
+# Hardware
+function camera() {
+	mpv av://v4l2:/dev/video0 --profile=low-latency --untimed
+}
+
+# Directory
+function showstorage() {
+	du -sh
+	echo "--------------------------"
+	du -sh * | sort -h | tail -20
+}
+function mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+function mkcp() {
+    local name="$1"
+    mkdir -p "$name"
+    for f in *"$name"*; do
+       [[ "$f" == "$name" ]] && continue
+       cp -r "$f" "$name"
+    done
+}
+function mkmv() {
+    local name="$1"
+    mkdir -p "$name"
+    for f in *"$name"*; do
+       [[ "$f" == "$name" ]] && continue
+       mv -r "$f" "$name"
+    done
+}
+
+# Gnuplots
+function qprofiles() {
+    gnuplot << 'TEMPLATE'
+@qprofiles
+TITLE="JointPlot"
+@save_as
+TEMPLATE
+}
+
+# Curl
+function cheat() {
+    curl cheat.sh/$1
+}
+function gif() {
+    curl gif.xyzzy.run/$1
+}
+function ducks() {
+    curl -sL https://raw.githubusercontent.com/gsobell/duckpond/home/duckpond.sh | bash
+}
+function w3ms() {
+    w3m "duckduckgo.com"
+}
+function w3mf() {
+    w3m "https://duckduckgo.com/html/?q=$*"
+}
+
+function foam() {
+    source /opt/OpenFOAM/OpenFOAM-13/etc/bashrc
+    PS1='\[\e[1;31m\]\u\[\e[0m\]\[\e[1;37m\]⚛\[\e[0m\]\[\e[1;34m\]FOAM\[\e[0m\] \[\e[38;5;70m\]\w\]\e[0m\]\$ '
+}
+
+function wiki() {
+    wiki-tui $1
+}
+
+
+
+./bashrc
+----------------
+# .bashrc
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# Prompt
+# PROMPT='%F{red}%n@%m %F{blue}%~ %f⚛ '
+# PS1='\[\e[1;31m\]\u\[\e[0m\]\[\e[1;35m\]⚛\[\e[0m\]\[\e[1;34m\]\h\[\e[0m\] \[\e[38;5;70m\]\w\]\e[0m\]\$ '
+# PS1='\[\e[1;31m\]\u\[\e[0m\]\[\e[1;37m\]⚛\[\e[0m\]\[\e[1;34m\]\h\[\e[0m\] \[\e[38;5;70m\]\w\]\e[0m\]\$ '
+source "$HOME/Tools/sh/current.theme"
+PS2='... '
+PS3='::: '
+PS4='+ ${BASH_SOURCE}:${LINENO}: '
+
+# Path
+export PATH="$HOME/Tools/bin:$PATH"
+export PATH="/usr/local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+# Python PATHS
+export PYTHONPATH="$HOME/Tools/python:$PYTHONPATH"
+
+# Sourcing files
+source $HOME/Tools/sh/alias
+source $HOME/Tools/sh/analysis
+source $HOME/Tools/sh/bash-bindings
+source $HOME/Tools/sh/function
+[ -f $HOME/.cargo/env ] && source $HOME/.cargo/env
+
+# History
+HISTSIZE=1000000
+HISTFILESIZE=2000000
+HISTCONTROL=ignoreboth
+shopt -s histappend
+export PROMPT_COMMAND="history -a"
+# PROMPT_COMMAND="history -a; history -n"
+
+
+###############################################################################
+# # >>> mamba initialize >>>
+# # !! Contents within this block are managed by 'micromamba shell init' !!
+# export MAMBA_EXE='/home/r/.local/bin/micromamba';
+# export MAMBA_ROOT_PREFIX='/home/r/micromamba';
+# __mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+# if [ $? -eq 0 ]; then
+#     eval "$__mamba_setup"
+# else
+#     alias micromamba="$MAMBA_EXE"  # Fallback on help from micromamba activate
+# fi
+# unset __mamba_setup
+# # <<< mamba initialize <<<
+# --- pyenv (MUST be early in PATH) ---
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+
+# eval "$(pyenv init --path)"
+# eval "$(pyenv init -)"
+pyenv() {
+    unset -f pyenv
+    eval "$(command pyenv init -)"
+    pyenv "$@"
+}
+###############################################################################
+
+# Eval apps
+eval "$(zoxide init bash)"
+
+. "$HOME/.cargo/env"
+
+###############################################################################
+# --- OpenFOAM  ---
+export WM_PROJECT_DIR=/opt/OpenFOAM/OpenFOAM-13
+# if [ -f $WM_PROJECT_DIR/etc/bashrc ]; then
+#     source $WM_PROJECT_DIR/etc/bashrc
+# fi
+# use foam to load the foam
+
+# --- openmpi  ---
+export PATH=/usr/lib/openmpi/bin:$PATH
+export LD_LIBRARY_PATH=/usr/lib/openmpi/lib:$LD_LIBRARY_PATH
+###############################################################################
+
+
+
+./alias
+----------------
+# Functionality
+alias sourcez='source ~/.zshrc'
+alias sourceb='source ~/.bashrc'
+alias watch_sq='watch "squeue -u romguil"'
+alias watch_ps='watch "ps auc"'
+
+# Improvement
+alias ls='ls --color=auto'
+alias la='ls -a --color=auto'
+alias ll='ls -lha --color=auto'
+alias sl='ls'
+alias grep='grep --color=auto'
+alias diff='diff --color=auto'
+alias cd='z'
+alias c='clear && read_info'
+
+# Vim open
+alias vim='nvim'
+
+# Directories
+alias setwork='pwd > ~/.workdir'
+alias gowork='cd $(cat ~/.workdir)'
+alias gw=gowork
+alias .2='../..'
+alias .3='../../..'
+alias .4='../../../..'
+alias .5='../../../../..'
+
+#########################################
+
+alias myip="curl -s http://ifconfig.me"
+alias ports='sudo netstat -tulanp'
+
+alias py='python3'
+alias python='python3'
+alias activate='source ./.venv/bin/activate'
+alias open='xdg-open'
+
+# Tmux
+alias t='tmux'
+alias ta='tmux attach'
+alias tls='tmux ls'
+
+# OTHER TOOLS
+alias librewolf='flatpak run io.gitlab.librewolf-community'
+alias news='newsboat'
+alias solitario='ttysolitaire --no-background'
+alias chess='chess-tui'
+alias audio='alsamixer'
+alias wifi='nmtui'
+
+
+
+./dark.theme
+----------------
+PS1='\[\e[1;31m\]\u\[\e[0m\]\[\e[1;37m\]⚛\[\e[0m\]\[\e[1;34m\]\h\[\e[0m\] \[\e[38;5;70m\]\w\[\e[0m\]\$ '
+
+
+
+./zsh-bindings
+----------------
+
+bindkey -v
+
+# Zoxide: smart directory jumping
+export EDITOR="vim"
+export VISUAL="vim"
+export GPG_TTY=$(tty)
+
+# Vim bindkeys
+bindkey -M vicmd '^[[1;5D' backward-word
+bindkey -M vicmd '^[[1;5C' forward-word
+bindkey -M viins '^[[1;5D' backward-word
+bindkey -M viins '^[[1;5C' forward-word
+bindkey -M viins 'jk' vi-cmd-mode
+bindkey -M viins 'jk' vi-cmd-mode
+bindkey -M viins "^[[3~" delete-char
+bindkey -M vicmd "^[[3~" delete-char
+bindkey -M viins "^[[3;5~" kill-word
+bindkey -M vicmd "^[[3;5~" kill-word
+bindkey -M viins '^H' backward-kill-word
+bindkey -M vicmd '^H' backward-kill-word
+
+
+
+./bash-bindings
+----------------
+set editing-mode vi
+
+bind '"\e[A": history-search-backward'
+bind '"\e[B": history-search-forward'
+bind '"\C-r": reverse-search-history'
+bind '"\C-l": clear-screen'
+
+
+
+./analysis
+----------------
+# ANALYSIS
+# Various tools for text extraction, representation, and analysis
+#
+# Author: Dave Eddy <dave@daveeddy.com>
+# Credits: Brendan Gregg http://www.brendangregg.com/
+# License: MIT
+# Date: 3/2/2013
+
+# Calculate the average of input numbers
+#
+# $ cat data
+# 100
+# 100
+# 0
+# $ avg < data
+# 66.666
+avg() {
+	local f=${1:-1}
+	awk -F "${2:- }" "length(\$$f) { i+=1; sum+=\$$f; } END { print sum/i }"
+}
+
+# Add commas to a given inputs numbers
+#
+# $ echo '100000 / 100000000' | commas
+# 100,000 / 100,000,000
+commas() {
+	sed -e :a -e 's/\(.*[0-9]\)\([0-9]\{3\}\)/\1,\2/;ta'
+}
+
+# Grab a field from given input
+# Adapted from http://www.brendangregg.com/Shell/field
+#
+# $ echo -e '  three    different\tcolumns ' | field 2
+# different
+field() {
+	awk -F "${2:- }" "{ print \$${1:-1} }"
+}
+
+# Poor mans frequency count
+#
+# $ cat data
+# a
+# b
+# c
+# c
+# $ cat data | freq
+#    1 a
+#    1 b
+#    2 c
+freq() {
+	sort | uniq -c | sort -n
+}
+
+# Print gaps in numbers (inclusively)
+# http://stackoverflow.com/questions/15867557/finding-gaps-sequential-numbers
+#
+# $ cat data
+# 1
+# 2
+# 3
+# 6
+# 10
+# $ gaps data
+# 4-5
+# 7-9
+gaps() {
+	awk '$1 != (p+1) { print p+1 "-" $1-1 } { p = $1 }'
+}
+
+# Figure out the max number of given input
+#
+# $ cat data
+# 1
+# 2
+# 3
+# $ max < data
+# 3
+max() {
+	local f=${1:-1}
+	awk -F "${2:- }" "
+	length(\$$f) {
+		if (max == \"\" || \$$f > max)
+			max = \$$f
+	}
+	END { print max; }"
+}
+
+# Figure out the min number of given input
+#
+# $ cat data
+# 1
+# 2
+# 3
+# $ min < data
+# 1
+min() {
+	local f=${1:-1}
+	awk -F "${2:- }" "
+	length(\$$f) {
+		if (min == \"\" || \$$f < min)
+			min = \$$f
+	}
+	END { print min; }"
+}
+
+# Print a summary for input data
+# show average, sum, min and max
+summarize() {
+	local f=${1:-1}
+	awk -F "${2:- }" "
+	length(\$$f) {
+		if (max == \"\")
+			max = min = \$$f;
+		i += 1;
+		sum += \$$f;
+		if (\$$f > max)
+			max = \$$f
+		if (\$$f < min)
+			min = \$$f
+	}
+	END {
+		print \"lines\\t\", i;
+		print \"min\\t\", min;
+		print \"max\\t\", max;
+		print \"sum\\t\", sum;
+		print \"avg\\t\", sum/i;
+	}"
+}
+
+# Total a given field using awk
+# Taken from http://www.brendangregg.com/Shell/total
+#
+# $ cat data
+# 1
+# 2
+# 4
+# $ cat data | total
+# 7
+total() {
+	awk -F "${2:- }" "{ s += \$${1:-1} } END { print s }"
+}
+
+
+
+./zshrc
+----------------
+
+# COMPINSTALL
+zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate
+zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]} m:{[:lower:][:upper:]}={[:upper:][:lower:]} r:|[.]=* r:|=*' 'm:{[:lower:]}={[:upper:]} m:{[:lower:][:upper:]}={[:upper:][:lower:]}'
+zstyle :compinstall filename '/home/r/.zshrc'
+autoload -Uz compinit
+compinit
+HISTFILE=~/.histfile
+HISTSIZE=100000
+SAVEHIST=100000
+setopt extendedglob notify
+unsetopt beep
+bindkey -v
+
+# Call the alias file
+source ~/Tools/sh/alias
+source ~/Tools/sh/function
+source ~/.cargo/env
+
+# Path
+export PATH="$HOME/Tools/bin:$PATH"
+export PATH="/usr/local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+# Python PATHS
+export PYTHONPATH="$HOME/Tools/python:$PYTHONPATH"
+
+# Prompt
+autoload -Uz colors && colors
+setopt prompt_subst
+PROMPT='%F{red}%n@%m %F{blue}%~ %f⚛ '
+# PROMPT='%F{red}%n⚛%F{blue}%~ %f %🐧 '
+
+
+# Zoxide: smart directory jumping
+eval "$(zoxide init zsh)"
+
+export EDITOR="nvim"
+export VISUAL="nvim"
+export BROWSER="qutebrowser"
+export TERMINAL="foot"
+export MANPAGER='nvim +Man'
+
+export GPG_TTY=$(tty)
+
+# Vim bindkeys
+bindkey -M vicmd '^[[1;5D' backward-word
+bindkey -M vicmd '^[[1;5C' forward-word
+bindkey -M viins '^[[1;5D' backward-word
+bindkey -M viins '^[[1;5C' forward-word
+bindkey -M viins 'jk' vi-cmd-mode
+bindkey -M viins 'jk' vi-cmd-mode
+bindkey -M viins "^[[3~" delete-char
+bindkey -M vicmd "^[[3~" delete-char
+bindkey -M viins "^[[3;5~" kill-word
+bindkey -M vicmd "^[[3;5~" kill-word
+bindkey -M viins '^H' backward-kill-word
+bindkey -M vicmd '^H' backward-kill-word
+
+###############################################################################
+###############################################################################
+###############################################################################
+# >>> mamba initialize >>>
+# !! Contents within this block are managed by 'micromamba shell init' !!
+export MAMBA_EXE='/home/r/.local/bin/micromamba';
+export MAMBA_ROOT_PREFIX='/home/r/micromamba';
+__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__mamba_setup"
+else
+    alias micromamba="$MAMBA_EXE"  # Fallback on help from micromamba activate
+fi
+unset __mamba_setup
+# <<< mamba initialize <<<
+
+# --- pyenv (MUST be early in PATH) ---
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+eval "$(direnv hook zsh)"
+###############################################################################
+###############################################################################
+###############################################################################
+
+
+
+./light.theme
+----------------
+PS1='\[\e[1;31m\]\u\[\e[0m\]\[\e[1;30m\]⚛\[\e[0m\]\[\e[1;34m\]\h\[\e[0m\] \[\e[38;5;70m\]\w\[\e[0m\]\$ '
+
+
