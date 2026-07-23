@@ -9,7 +9,6 @@ HISTSIZE=100000
 SAVEHIST=100000
 setopt extendedglob notify
 unsetopt beep
-bindkey -v
 
 # source "$HOME/Tools/sh/current.theme"
 show_shell_variables() {
@@ -31,6 +30,7 @@ export BROWSER="qutebrowser"
 export TERMINAL="foot"
 export MANPAGER='nvim +Man'
 export GPG_TTY=$(tty)
+export PROMPT_COMMAND="history -a"
 
 # Path
 export PATH="$HOME/Tools/bin:$PATH"
@@ -47,6 +47,7 @@ source $HOME/Tools/sh/function
 # source $HOME/Tools/sh/bash-bindings
 
 # Vim bindkeys
+bindkey -v
 bindkey -M vicmd '^[[1;5D' backward-word
 bindkey -M vicmd '^[[1;5C' forward-word
 bindkey -M viins '^[[1;5D' backward-word
@@ -59,14 +60,35 @@ bindkey -M viins "^[[3;5~" kill-word
 bindkey -M vicmd "^[[3;5~" kill-word
 bindkey -M viins '^H' backward-kill-word
 bindkey -M vicmd '^H' backward-kill-word
-
-export PROMPT_COMMAND="history -a"
+# Cursor shape for vi mode
+function zle-keymap-select {
+    case $KEYMAP in
+        vicmd)
+            printf '\e[2 q'    # block
+            ;;
+        viins|main)
+            printf '\e[5 q'    # beam
+            ;;
+    esac
+}
+function zle-line-init {
+    printf '\e[5 q'            # start in insert mode
+}
+function zle-line-finish {
+    printf '\e[5 q'
+}
+zle -N zle-keymap-select
+zle -N zle-line-init
+zle -N zle-line-finish
 
 ###############################################################################
 #
 # Other Apps
 #
 ###############################################################################
+
+# --- fzf ---
+source <(fzf --zsh)
 
 # --- pyenv (MUST be early in PATH) ---
 export PYENV_ROOT="$HOME/.pyenv"
