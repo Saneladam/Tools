@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Sun 26. Jul 2026
+#
+# Purpose:      Aliases 
+# =============================================================================
+
+alias quicknmap="nmap -vv -T4 -p- -sV --max-retries 5 localhost"
