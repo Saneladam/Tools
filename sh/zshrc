@@ -109,3 +109,4 @@ export WM_PROJECT_DIR=/opt/OpenFOAM/OpenFOAM-13
 # --- openmpi  ---
 export PATH=/usr/lib/openmpi/bin:$PATH
 export LD_LIBRARY_PATH=/usr/lib/openmpi/lib:$LD_LIBRARY_PATH
+export QTWEBENGINE_CHROMIUM_FLAGS=--disable-gpu

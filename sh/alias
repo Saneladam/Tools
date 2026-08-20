@@ -5,6 +5,7 @@ alias watch_sq='watch "squeue -u romguil"'
 alias watch_ps='watch "ps auc"'
 
 # Improvement
+alias qutebrowser='QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu" qutebrowser'
 alias ls='ls --color=auto'
 alias la='ls -a --color=auto'
 alias ll='ls -lha --color=auto'

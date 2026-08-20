@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Mon Aug 17 23:54:12 CEST 2026
+#
+# Purpose:      Shows the power options.
+# =============================================================================
+
+source "$HOME/.config/bemenu/theme.sh"
+
+
+run_command() {
+    case "$1" in
+        lock)
+            "$HOME/Tools/bin/lock.sh"
+            ;;
+        sleep)
+            loginctl suspend
+            ;;
+        reboot)
+            loginctl reboot
+            ;;
+        shutdown)
+            loginctl poweroff
+            ;;
+        *)
+            echo "Not a valid answer"
+            ;;
+    esac
+}
+
+
+select_power() {
+    printf '%s\n' \
+        "lock" \
+        "sleep" \
+        "reboot" \
+        "shutdown" |
+    bemenu \
+        "${BEMENU_OPTS[@]}" \
+        --width-factor 0.20 \
+        -p "POWER OPTIONS"
+}
+
+
+main() {
+    local choice
+    choice="$(select_power)" || exit 1
+    [[ -z "$choice" ]] && exit 0
+    run_command "$choice"
+}
+
+
+if ! (return 2>/dev/null); then
+    main
+fi

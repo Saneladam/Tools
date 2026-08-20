@@ -6,9 +6,13 @@
 #
 
 battery=$( cat /sys/class/power_supply/BAT0/capacity 2>/dev/null )
-date=$( date '+%a %d/%m/%Y' )
-time=$( date '+%H:%M' )
+date_info=$( date '+%a %d/%m/%Y' )
+time_info=$( date '+%X' )
+weather=$( cat "$HOME/Logs/weather.log" )
 
-echo "  ###################################### "
-echo "< ##   $time ~ $date ~ $battery%   ## >"
-echo "  ###################################### "
+# echo "$weather        $time_info $date_info        $battery%"
+printf '%s\t%s\t\t%s\t%s%%\t\n' \
+    "$time_info" \
+    "$date_info" \
+    "$weather" \
+    "$battery"

@@ -1,0 +1,21 @@
+#!/usr/bin/bash
+
+#
+# Created by: Roman
+# On the 13/05/2026
+#
+
+LOG="$HOME/Logs/weather.log"
+
+# info=$(curl -s wttr.in | grep -m 1 ' °C')
+
+info=$(
+    # curl -fsS --max-time 10 'wttr.in/?format=%t(%f)' |
+    curl -fsS --max-time 10 'wttr.in' |
+    sed 's/\x1B\[[0-9;]*[mK]//g' |
+    grep -m1 ' °C'|
+    grep -o '[+-][0-9].*$' | tr -d ' '
+)
+
+echo $info | tee $LOG
+# sleep 900

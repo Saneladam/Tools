@@ -156,3 +156,8 @@ function foam() {
 function wiki() {
     wiki-tui $1
 }
+
+function get_appid() {
+        swaymsg -t get_tree | grep "app_id"
+        swaymsg -t get_tree | grep "class"
+}

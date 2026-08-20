@@ -1,10 +1,10 @@
 # set -g status-style fg=black,bg=green
-set -g pane-border-style fg=#3b4261
-set -g pane-active-border-style fg=#7aa2f7
+# set -g pane-border-style fg=#3b4261
+# set -g pane-active-border-style fg=#7aa2f7
 
 set -g status-style fg=black,bg=green
-set -g status-left "#[fg=black,bg=red] < #S > #[fg=black,bold,bg=green] "
-set -g status-right "#[fg=blue,bold,bg=black]  %H:%M  #[fg=white,bold]%d/%m/%Y #[fg=red] #(cat /sys/class/power_supply/BAT0/capacity)%% "
+set -g status-left "#[fg=black,bg=purple] < #S > #[fg=black,bold,bg=green] "
+set -g status-right ""
 
 
 # set -g status-style fg=#c8ccd4,bg=#161616
