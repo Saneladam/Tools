@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TERMINAL="alacritty"
+TERMINAL="foot"
 folder="$HOME/Notes"
 newnote_folder="$folder/Bitacora"
 TODO_DIR="$HOME/Notes/ToDo.md"

@@ -8,18 +8,25 @@
 # Purpose:      Run chafa for all images on curr dir
 # =============================================================================
 
-for image in ./*.jpg; do
-    echo $image
-    chafa $image
-    echo
-done
-for image in ./*.jpeg; do
-    echo $image
-    chafa $image
-    echo
-done
-for image in ./*.png; do
-    echo $image
-    chafa $image
-    echo
-done
+for_loop_image(){
+    for image in ./*.jpg; do
+        [ -f $image ] || continue
+        echo $image
+        chafa $image
+        echo
+    done
+    for image in ./*.jpeg; do
+        [ -f $image ] || continue
+        echo $image
+        chafa $image
+        echo
+    done
+    for image in ./*.png; do
+        [ -f $image ] || continue
+        echo $image
+        chafa $image
+        echo
+    done
+}
+
+for_loop_image 2>/dev/null
