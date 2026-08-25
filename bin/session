@@ -13,13 +13,12 @@ set -euo pipefail
 REPOS=(
     "$HOME/Codes"
     "$HOME/Documents/MasterThesis"
+    "$HOME/Documents/IntModDisMit_BUA"
     "$HOME/Exercices"
     "$HOME/Notes"
     "$HOME/Tools"
+    "$HOME/KALI"
 )
-
-BACKUP_DIR="$HOME/backups"
-BACKUP_DRIVE="/mnt/backup"
 
 ###############################################################################
 # Printing
