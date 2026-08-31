@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Roman garcia guill
+
+
 out="resume.txt"
 show_all=false
 
