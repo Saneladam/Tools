@@ -7,9 +7,39 @@
 #
 # Purpose:      Logger workflow.
 # =============================================================================
+# To implement: 
+#
+#   [ ]     Make it pipeable. 
+#              > logit 
+#              > command ... | logit
+#
+#   [ ]     Register the name. 
+#              ./% name 
+#              ./% -t name 
+#              ./% name -t 
+#              jname=name
+#
+#   [ ]     Handle the job return with disown and nohup. 
+#               fg disown nohup 
+#
+#   [ ]     get_job_stout with red for errors. 
+#               job>>tmp 2>tmp.err
+#               color(tmp.err) >> tmp
+#
+#   [ ]     Implemt the farewall protocol. 
+#               while jPID; do
+#                   ...
+#               done
+#               echo $FOOTER
+#               run-time
+#               errors
+#               memory and CPU - GPU usage
+#               --electricity_usage (external)
+#               good-bye
 
 # %% Configuration
-HEADER=""
+HEADER="\tAUTO-LOGGER\t"
+HEADER="\tEND of LOGFILE\t"
 TEE=false
 if [ $1 = "-t"  ]; then
     TEE=true
@@ -39,12 +69,16 @@ farewell(){
             ;;
     esac
     :
-    # until $( $jPID )
+}
+get_job_stout(){
+    :
 }
 
 # %% Main
 main() {
 
+    echo "==============="
+    echo "&&&&&&&&&&&&&&&"
     echo "***************"
     echo "$HEADER"
     echo "***************"
@@ -56,7 +90,10 @@ main() {
         "$jname" \
         "$jPID" \
         "$jtime"
+    echo "==============="
+    get_job_stout
     echo "***************"
+    echo "==============="
 
 }
 
