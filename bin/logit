@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Mon 31. Aug 2026
+#
+# Purpose:      Logger workflow.
+# =============================================================================
+
+# %% Configuration
+HEADER=""
+TEE=false
+if [ $1 = "-t"  ]; then
+    TEE=true
+fi
+
+# %% Definitions
+jPID=$( ps au | grep T | tail -1 | awk '{print $11}' )
+jtime=$( ps au | grep T | tail -1 | awk '{print $9}')
+jname=$( ps au | grep T | tail -1 | awk '{print $1}')
+date_info=$( date '+%a %d/%m/%Y' )
+time_info=$( date '+%X' )
+
+LOGDIR="$HOME/Logs/${jname}-${jtime}.log"
+
+# %% Functions
+get_jstat()  {
+    ps au | grep $jPID | tail -1 | awk '{print $8}'
+}
+farewell(){
+    # This funciton waits until the job is done / completed / interrupted or exited and prints the farewell message.
+    case "get_jstat" in
+        pattern)
+            command ...
+            ;;
+        *)
+            command ...
+            ;;
+    esac
+    :
+    # until $( $jPID )
+}
+
+# %% Main
+main() {
+
+    echo "***************"
+    echo "$HEADER"
+    echo "***************"
+    printf '%s\t%s\t\t\n' \
+        "$time_info" \
+        "$date_info"
+    echo "***************"
+    printf 'Command:\t\t%s\n\tJOB PID:\t%s\t\n\tStart at:\t%s\t\n' \
+        "$jname" \
+        "$jPID" \
+        "$jtime"
+    echo "***************"
+
+}
+
+if ! (return 2>/dev/null); then
+    if TEE; then
+        main >> $LOGDIR
+    else
+        main | tee -a $LOGDIR
+    fi
+fi
+
