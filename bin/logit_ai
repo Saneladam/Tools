@@ -1,0 +1,270 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Mon 31. Aug 2026
+#
+# Purpose:      Logger workflow.
+# =============================================================================
+
+set -u
+
+# %% Configuration
+
+HEADER="AUTO-LOGGER"
+FOOTER="END OF LOGFILE"
+
+LOGDIR="${HOME}/Logs"
+
+TEE=false
+JNAME=""
+JOB_PID=""
+LOGFILE=""
+
+# %% Functions
+
+usage() {
+    cat <<EOF
+Usage:
+    logit [-t] command [args...]
+
+    command | logit
+    command | logit -t
+
+Options:
+    -t      Print job output to terminal as well as logfile.
+EOF
+}
+
+
+# -----------------------------------------------------------------------------
+# Helpers
+# -----------------------------------------------------------------------------
+
+timestamp() {
+    date '+%Y-%m-%d %H:%M:%S'
+}
+
+
+timestamp_file() {
+    date '+%Y%m%d-%H%M%S'
+}
+
+
+is_alive() {
+    local pid="$1"
+
+    kill -0 "$pid" 2>/dev/null
+}
+
+
+get_state() {
+    local pid="$1"
+
+    ps -o state= -p "$pid" 2>/dev/null | tr -d ' '
+}
+
+
+get_elapsed() {
+    local pid="$1"
+
+    ps -o etime= -p "$pid" 2>/dev/null | sed 's/^ *//'
+}
+
+
+# -----------------------------------------------------------------------------
+# Logging
+# -----------------------------------------------------------------------------
+
+log_header() {
+
+    {
+        printf '%s\n' '=============================================='
+        printf '%s\n' "$HEADER"
+        printf '%s\n' '=============================================='
+
+        printf 'Command : %s\n' "$JNAME"
+        printf 'PID     : %s\n' "$JOB_PID"
+        printf 'Started : %s\n' "$START_TIME"
+        printf 'Logfile : %s\n' "$LOGFILE"
+
+        printf '%s\n' '----------------------------------------------'
+    } >> "$LOGFILE"
+}
+
+
+log_footer() {
+
+    {
+        printf '%s\n' '----------------------------------------------'
+        printf 'Finished : %s\n' "$(timestamp)"
+        printf 'Status   : %s\n' "$JOB_STATUS"
+        printf 'Exit code: %s\n' "$JOB_EXIT"
+        printf 'Runtime  : %s\n' "$RUNTIME"
+
+        printf '%s\n' '=============================================='
+        printf '%s\n' "$FOOTER"
+        printf '%s\n' '=============================================='
+    } >> "$LOGFILE"
+}
+
+
+# -----------------------------------------------------------------------------
+# Pipe mode
+# -----------------------------------------------------------------------------
+
+pipe_mode() {
+
+    local start
+    local end
+    local elapsed
+
+    start=$(date +%s)
+
+    if "$TEE"; then
+        tee -a "$LOGFILE"
+    else
+        cat >> "$LOGFILE"
+    fi
+
+    local status=$?
+
+    end=$(date +%s)
+    elapsed=$((end - start))
+
+    {
+        printf '\n'
+        printf '%s\n' '----------------------------------------------'
+        printf 'Pipeline exit code: %s\n' "$status"
+        printf 'Runtime           : %ss\n' "$elapsed"
+        printf '%s\n' '----------------------------------------------'
+    } >> "$LOGFILE"
+
+    return "$status"
+}
+
+
+# -----------------------------------------------------------------------------
+# Job mode
+# -----------------------------------------------------------------------------
+
+run_job() {
+
+    local start_epoch
+    local end_epoch
+
+    start_epoch=$(date +%s)
+
+    "$@" > "$LOGFILE.tmp" 2> "$LOGFILE.err" &
+    JOB_PID=$!
+
+    log_header
+
+    # Keep the job independent from the shell.
+    disown "$JOB_PID" 2>/dev/null || true
+
+    wait "$JOB_PID"
+    JOB_EXIT=$?
+
+    end_epoch=$(date +%s)
+    RUNTIME=$((end_epoch - start_epoch))
+
+    if [ "$JOB_EXIT" -eq 0 ]; then
+        JOB_STATUS="SUCCESS"
+    else
+        JOB_STATUS="FAILED"
+    fi
+
+    {
+        cat "$LOGFILE.tmp"
+
+        if [ -s "$LOGFILE.err" ]; then
+            printf '\n'
+            printf '%s\n' 'ERROR OUTPUT'
+            printf '%s\n' '----------------------------------------------'
+            cat "$LOGFILE.err"
+        fi
+    } >> "$LOGFILE"
+
+    rm -f "$LOGFILE.tmp" "$LOGFILE.err"
+
+    log_footer
+
+    if "$TEE"; then
+        cat "$LOGFILE"
+    fi
+
+    return "$JOB_EXIT"
+}
+
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+
+main() {
+
+    mkdir -p "$LOGDIR"
+
+    while [ "$#" -gt 0 ]; do
+
+        case "$1" in
+            -t)
+                TEE=true
+                shift
+                ;;
+
+            -h|--help)
+                usage
+                return 0
+                ;;
+
+            --)
+                shift
+                break
+                ;;
+
+            *)
+                break
+                ;;
+        esac
+
+    done
+
+
+    LOGFILE="${LOGDIR}/log-$(timestamp_file).log"
+
+
+    # stdin is not a terminal => pipe mode
+    if [ ! -t 0 ]; then
+
+        JNAME="stdin"
+
+        pipe_mode
+
+        return $?
+    fi
+
+
+    # Nothing to execute.
+    if [ "$#" -eq 0 ]; then
+        usage
+        return 2
+    fi
+
+
+    # Command name.
+    JNAME="$1"
+
+    # Absolute path if possible.
+    if command -v "$1" >/dev/null 2>&1; then
+        JNAME=$(command -v "$1")
+    fi
+
+
+    run_job "$@"
+}
+
+
+main "$@"
