@@ -1,23 +1,62 @@
 #!/bin/bash
 
-set -e
+# %% Set error catcher
+set -euo pipefail
 
-[ -z "$1" ] && { echo "Uso: copy <archivo>"; exit 1; }
+# %% No pdftotext error catcher
+command -v pdftotext >/dev/null 2>&1 || {
+    echo "copy: required 'pdftotext' (packet: poppler-utils)" >&2
+    exit 127
+}
 
+# %% Usage no argument error catcher
+usage() {
+    echo "Usage: copy <file> [page from] [page to]"
+    exit 1
+}
+if [ "$#" -lt 1 ]; then
+    usage
+fi
+
+# %% File not found error catcher
 file="$1"
-extension=${file%%*.}
+if [ ! -f "$file" ]; then
+    echo "copy: file not found: $file" >&2
+    exit 1
+fi
+
+# %% Copy command error catcher
+if command -v wl-copy >/dev/null 2>&1 && [ -n "${WAYLAND_DISPLAY:-}" ]; then
+    CLIPBOARD=(wl-copy)
+elif command -v xclip >/dev/null 2>&1 && [ -n "${DISPLAY:-}" ]; then
+    CLIPBOARD=(xclip -selection clipboard)
+else
+    echo "copy: clipboard backend not found." >&2
+    echo "Install wl-clipboard (Wayland) or xclip (X11)." >&2
+    exit 127
+fi
+
+extension="${file##*.}"
+extension="${extension,,}"
 
 case "$extension" in
-  pdf)
-    if [ -n "$2" ]; then
-        pdftotext -f "$2" -l "${3:-$2}" "$file" - | wl-copy
-    else
-        pdftotext "$file" - | wl-copy
-    fi
-    ;;
-  *)
-    wl-copy < "$file"
-    ;;
+    pdf)
+        if [ -n "${2:-}" ]; then
+            from="$2"
+            to="${3:-$2}"
+            pdftotext \
+                -f "$from" \
+                -l "$to" \
+                "$file" - |
+                "${CLIPBOARD[@]}"
+        else
+            pdftotext "$file" - |
+                "${CLIPBOARD[@]}"
+        fi
+        ;;
+    *)
+        "${CLIPBOARD[@]}" < "$file"
+        ;;
 esac
 
-echo "$file" content copied to cplipboard
+printf '%s content copied to clipboard\n' "$file"
