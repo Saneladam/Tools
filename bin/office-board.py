@@ -11,6 +11,7 @@
 import subprocess
 from pathlib import Path
 from dataclasses import dataclass
+from typing import List
 
 PROJECT_DIR = Path.home() / "Tools" / "tmux" / "sessions"
 
@@ -20,11 +21,8 @@ class Project:
     name: str
     file: Path
 
-
-SPACING = 40
-
-MENU = ["view options", "create project", "delete project"]
-
+SPACING : int = 40
+MENU : list[str] = ["view options", "create project", "delete project"]
 
 def get_projects(directory: Path = PROJECT_DIR) -> list[Project]:
     projects: list[Project] = []
@@ -59,6 +57,10 @@ def new_project():
 
 
 def unalive_project():
+    pass
+
+
+def select_options(a: ):
     pass
 
 

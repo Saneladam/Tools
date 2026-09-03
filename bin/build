@@ -13,11 +13,20 @@ TEMPLATES_DIR="$HOME/Templates"
 [ -z "$1" ] && { echo "Uso: build <template>"; exit 1; }
 
 template="$1"
-dest="${2:-$template}"
+destiny="${2:-$template}"
 
 src=$(find "$TEMPLATES_DIR" -maxdepth 1 -iname "${template}_TEMPLATE" -o -iname "$template.*" | head -n1)
 
 [ -z "$src" ] && { echo "Template no encontrado"; exit 1; }
+[ -e "$destiny" ] && {
+    echo "--> BUILD found existing target" 
+    echo "    BUILD it anyway? [Y/n]"
+    read response
+    [ $response == "n" ] && {
+        echo "... exiting ..."
+        exit 1
+    }
+}
 
-cp -r "$src" "$dest"
-echo "Builded: $dest"
+rsync -a "$src/" "$destiny/"
+echo "*** BUILDED: $destiny ***"
