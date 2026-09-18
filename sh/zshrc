@@ -15,7 +15,14 @@ show_shell_variables() {
 
 }
 # PS1="%F{#008000}[%T]<%L>%K{3a3a3a}%n@%m%k %S%1~:(%j)%s "
-PROMPT='%F{red}%n⚛%m %f%F{green}%~%f '
+if [[ "$HOST" == "void" ]]; then
+    HOST_COLOR='%F{red}'
+elif [[ "$HOST" == "devuan" ]]; then
+    HOST_COLOR='%F{blue}'
+else 
+    HOST_COLOR='%F{magenta}'
+fi
+PROMPT="${HOST_COLOR}%n⚛%m %f%F{green}%~%f "
 PS2='... '
 PS3='::: '
 PS4='+ ${BASH_SOURCE}:${LINENO}: '
