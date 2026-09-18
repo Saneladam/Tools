@@ -163,6 +163,7 @@ function get_appid() {
         swaymsg -t get_tree | grep "class"
 }
 
-function maxcompress() {
-        tar -cJf ${1}.tar.xz $1/
-}
+# function maxcompress() {
+#         [ -z $1 ] && exit
+#         tar -cJf ${1}.tar.xz $1/
+# }

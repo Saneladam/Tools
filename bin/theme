@@ -126,7 +126,27 @@ change_prompt() {
     source "$HOME/.bashrc"
 }
 
+change_wallpaper() {
+
+    case $1 in
+        dark)
+            ln -sfn \
+                "$HOME/Pictures/Wallpapers/current_dark" \
+                "$HOME/Pictures/Wallpapers/current"
+            ;;
+        light)
+            ln -sfn \
+                "$HOME/Pictures/Wallpapers/current_light" \
+                "$HOME/Pictures/Wallpapers/current"
+            ;;
+    esac
+    swaymsg output "*" bg "$HOME/Pictures/Wallpapers/current" fill
+}
+
 case $1 in
+    something)
+        exit 69
+        ;;
     dark|light)
         change_mako $1
         change_bemenu $1
@@ -136,6 +156,7 @@ case $1 in
         change_tmux $1
         # change_qutebrowser $1
         change_prompt $1
+        change_wallpaper $1
         notify-send "Theme update" "Now in $1 mode"
         ;;
     *)
