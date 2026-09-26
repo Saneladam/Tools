@@ -7,8 +7,17 @@ compinit
 HISTFILE=~/.histfile
 HISTSIZE=100000
 SAVEHIST=100000
-setopt extendedglob notify
+
+# zsh configurations
+setopt extendedglob 
+setopt notify
+setopt interactivecomments
 unsetopt beep
+setopt appendhistory
+setopt incappendhistory
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt autocd
 
 # source "$HOME/Tools/sh/current.theme"
 show_shell_variables() {
@@ -37,14 +46,15 @@ export BROWSER="qutebrowser"
 export TERMINAL="foot"
 export MANPAGER='nvim +Man'
 export GPG_TTY=$(tty)
-export PROMPT_COMMAND="history -a"
 
 # Path
 export PATH="$HOME/Tools/bin:$PATH"
 export PATH="/usr/local/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-# Python PATHS
+# Python Path
 export PYTHONPATH="$HOME/Tools/python:$PYTHONPATH"
+# Other Paths
+export LD_LIBRARY_PATH=/usr/lib/openmpi/lib:$LD_LIBRARY_PATH
 
 # Sourcing files
 source $HOME/Tools/sh/alias

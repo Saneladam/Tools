@@ -1,1 +1,1 @@
-/home/akash/.config/nvim/lua/theme/light.lua
+/home/akash/.config/nvim/lua/theme/dark.lua

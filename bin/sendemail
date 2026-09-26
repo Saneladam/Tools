@@ -1,10 +1,21 @@
 #!/bin/bash
 
 AERC_CONFIG="$HOME/.config/aerc/accounts.conf"
-SEND_EMAIL="/usr/bin/sendemail"
 
-[[ -x "$SEND_EMAIL" ]] || {
-    echo "ERROR: $SEND_EMAIL not found."
+# %% Find real sendEmail binary
+for SEND_EMAIL in \
+    /usr/bin/sendEmail \
+    /usr/bin/sendemail \
+    "$(command -v sendEmail 2>/dev/null)" \
+    "$(command -v sendemail 2>/dev/null)"
+do
+    if [[ -n "$SEND_EMAIL" && -x "$SEND_EMAIL" && "$SEND_EMAIL" != "$0" ]]; then
+        break
+    fi
+done
+
+[[ -n "$SEND_EMAIL" && -x "$SEND_EMAIL" && "$SEND_EMAIL" != "$0" ]] || {
+    echo "ERROR: sendEmail executable not found."
     exit 1
 }
 
