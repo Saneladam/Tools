@@ -1,0 +1,6 @@
+#!/bin/bash
+
+exec sendemail \
+    -f "romangarciaguill@gmail.com" \
+    -t "romangarciaguill@gmail.com" \
+    "$@"

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+AERC_CONFIG="$HOME/.config/aerc/accounts.conf"
+SEND_EMAIL="/usr/bin/sendemail"
+
+[[ -x "$SEND_EMAIL" ]] || {
+    echo "ERROR: $SEND_EMAIL not found."
+    exit 1
+}
+
+[[ -f "$AERC_CONFIG" ]] || {
+    echo "ERROR: aerc configuration not found: $AERC_CONFIG"
+    exit 1
+}
+
+read -r SMTP_USER SMTP_PASS < <(
+    python3 - "$AERC_CONFIG" <<'PY'
+import sys
+from pathlib import Path
+from urllib.parse import urlsplit, unquote
+
+config = Path(sys.argv[1])
+
+for line in config.read_text().splitlines():
+    if line.strip().startswith("outgoing"):
+        value = line.split("=", 1)[1].strip()
+        url = urlsplit(value)
+
+        user = unquote(url.username or "")
+        password = unquote(url.password or "")
+
+        print(user, password)
+        break
+else:
+    sys.exit(1)
+PY
+)
+
+[[ -n "$SMTP_USER" && -n "$SMTP_PASS" ]] || {
+    echo "ERROR: could not read SMTP credentials from aerc."
+    exit 1
+}
+
+exec "$SEND_EMAIL" \
+    -s smtp.gmail.com:587 \
+    -o tls=yes \
+    -xu "$SMTP_USER" \
+    -xp "$SMTP_PASS" \
+    "$@"

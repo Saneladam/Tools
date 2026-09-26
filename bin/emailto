@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [[ $# -lt 1 ]]; then
+    echo "Usage: emailto RECIPIENT [sendemail options...]"
+    exit 1
+fi
+
+TO="$1"
+shift
+
+exec sendemail \
+    -f "romangarciaguill@gmail.com" \
+    -t "$TO" \
+    "$@"

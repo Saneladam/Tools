@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# =============================================================================
+# Authors:      Román García Guill
+# Contact:      romangarciaguill@gmail.com
+# Created:      Sat 26. Sep 2026
+#
+# Purpose:      Installs a list of common Kali-oriented packages.
+# Version:      Devuan Excalibur / Void Linux
+# =============================================================================
+
+# %% Argument file
+FILE=${1:-}
+
+[[ -f "$FILE" ]] || {
+    echo "Must provide a file as an argument with the name of packages to install with new lines"
+    exit 1
+}
+
+# %% Detect operating system
+source /etc/os-release
+
+case "$ID" in
+    devuan)
+        PACKAGE_MANAGER="apt"
+        UPDATE_CMD=(sudo apt-get update)
+        INSTALL_CMD=(sudo apt-get install -y)
+        ;;
+
+    void)
+        PACKAGE_MANAGER="xbps"
+        UPDATE_CMD=(sudo xbps-install -S)
+        INSTALL_CMD=(sudo xbps-install -y)
+        ;;
+
+    *)
+        echo "ERROR: Unsupported operating system: $ID"
+        exit 2
+        ;;
+esac
+
+echo "Detected system: $PRETTY_NAME"
+echo "Package manager: $PACKAGE_MANAGER"
+echo
+
+# %% Update repositories
+echo "Updating repositories ..."
+
+if ! "${UPDATE_CMD[@]}"; then
+    echo "ERROR: repository update failed."
+    exit 3
+fi
+
+echo
+
+# %% Read packages
+packages=()
+
+while read -r pkg; do
+    [[ -z "$pkg" ]] && continue
+    [[ "$pkg" == \#* ]] && continue
+
+    packages+=("$pkg")
+done < "$FILE"
+
+[[ ${#packages[@]} -gt 0 ]] || {
+    echo "ERROR: no packages found in $FILE"
+    exit 4
+}
+
+# %% Install packages
+echo "Installing ${#packages[@]} packages ..."
+echo
+
+if ! "${INSTALL_CMD[@]}" "${packages[@]}"; then
+    echo
+    echo "ERROR: package installation failed."
+    exit 5
+fi
+
+# %% Summary
+echo
+echo "Installation finished without error."

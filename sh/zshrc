@@ -18,9 +18,9 @@ show_shell_variables() {
 if [[ "$HOST" == "void" ]]; then
     HOST_COLOR='%F{red}'
 elif [[ "$HOST" == "devuan" ]]; then
-    HOST_COLOR='%F{blue}'
-else 
     HOST_COLOR='%F{magenta}'
+else 
+    HOST_COLOR='%F{blue}'
 fi
 PROMPT="${HOST_COLOR}%n⚛%m %f%F{green}%~%f "
 PS2='... '
