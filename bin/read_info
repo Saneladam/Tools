@@ -10,9 +10,17 @@ date_info=$( date '+%a %d/%m/%Y' )
 time_info=$( date '+%X' )
 weather=$( cat "$HOME/Logs/weather.log" )
 
-# echo "$weather        $time_info $date_info        $battery%"
-printf '%s\t%s\t\t%s\t%s%%\t\n' \
-    "$time_info" \
-    "$date_info" \
-    "$weather" \
-    "$battery"
+if [[ -n $battery ]]; then
+    # echo "$weather        $time_info $date_info        $battery%"
+    printf '%s\t%s\t\t%s\t%s%%\t\n' \
+        "$time_info" \
+        "$date_info" \
+        "$weather" \
+        "$battery"
+else
+    # echo "$weather        $time_info $date_info        $battery%"
+    printf '%s\t%s\t\n' \
+        "$time_info" \
+        "$date_info"
+fi
+
