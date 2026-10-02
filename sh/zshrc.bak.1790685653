@@ -127,9 +127,3 @@ export WM_PROJECT_DIR=/opt/OpenFOAM/OpenFOAM-13
 export PATH=/usr/lib/openmpi/bin:$PATH
 export LD_LIBRARY_PATH=/usr/lib/openmpi/lib:$LD_LIBRARY_PATH
 export QTWEBENGINE_CHROMIUM_FLAGS=--disable-gpu
-
-# >>> grok installer >>>
-export PATH="$HOME/.grok/bin:$PATH"
-fpath=(~/.grok/completions/zsh $fpath)
-autoload -Uz compinit && compinit -C
-# <<< grok installer <<<
