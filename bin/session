@@ -8,7 +8,12 @@
 # Purpose:      Executes session preparation and session closure for the day.
 # =============================================================================
 
-set -euo pipefail
+set -uo pipefail
+
+LOG_DIR="$HOME/Logs"
+LOG_FILE="$LOG_DIR/session.log"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$LOG_FILE") 2>&1
 
 REPOS=(
     "$HOME/Codes"
@@ -71,19 +76,22 @@ git_pull()
             continue
         fi
 
-        output=$(git -C "$repo" pull --ff-only 2>&1 || true)
-
-        case "$output" in
-            *"Already up to date"*)
-                echo "up to date"
-                ;;
-            *"Fast-forward"*)
-                echo "updated"
-                ;;
-            *)
-                echo "done"
-                ;;
-        esac
+        if output=$(git -C "$repo" pull --ff-only 2>&1); then
+            case "$output" in
+                *"Already up to date"*)
+                    echo "up to date"
+                    ;;
+                *"Fast-forward"*)
+                    echo "updated"
+                    ;;
+                *)
+                    echo "done"
+                    ;;
+            esac
+        else
+            echo "sync failed; continuing with the remaining repositories"
+            printf "  %s\n" "$output"
+        fi
     done
 }
 
@@ -95,14 +103,9 @@ notes_prepare()
 {
     section "Notes"
 
-    TODAY="$HOME/Notes/$(date +%F).md"
-
-    if [ ! -f "$TODAY" ]; then
-        touch "$TODAY"
-        echo "created $(basename "$TODAY")"
-    else
-        echo "opened $(basename "$TODAY")"
-    fi
+    local today="$HOME/Notes/Bitacora/$(date +%F-%a).md"
+    printf '%s\n' "daily note: $today"
+    printf '%s\n' "not created; it will appear when notes opens and you save it"
 }
 
 ###############################################################################
@@ -159,17 +162,26 @@ git_push()
 
         git -C "$repo" rev-parse --git-dir >/dev/null 2>&1 || continue
 
-        git -C "$repo" add -A
+        if ! git -C "$repo" add -A; then
+            echo "$(basename "$repo") staging failed; continuing"
+            continue
+        fi
 
         if git -C "$repo" diff --cached --quiet; then
             printf "%-24s no changes\n" "$(basename "$repo")"
             continue
         fi
 
-        git -C "$repo" commit \
-            -m "Daily backup $(date '+%F %H:%M')"
+        if ! git -C "$repo" commit \
+            -m "Daily backup $(date '+%F %H:%M')"; then
+            echo "$(basename "$repo") commit failed; continuing"
+            continue
+        fi
 
-        git -C "$repo" push
+        if ! git -C "$repo" push; then
+            echo "$(basename "$repo") push failed; continuing"
+            continue
+        fi
 
         printf "%-24s committed\n" "$(basename "$repo")"
     done

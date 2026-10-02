@@ -105,7 +105,18 @@ return {
     -- En ./plugins/ui.lua
     {
         "MeanderingProgrammer/render-markdown.nvim",
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-tree/nvim-web-devicons",
+        },
         opts = {
+            enabled = true,
+            file_types = { "markdown", "quarto" },
+            heading = {
+                enabled = true,
+                position = "overlay",
+                icons = { "󰫎 ", "󰫏 ", "󰫐 ", "󰫑 ", "󰫒 ", "󰫓 " },
+            },
             latex = {
                 enabled = true,
                 -- Si no deseas instalar utilidades externas de renderizado de latex, 

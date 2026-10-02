@@ -1,0 +1,43 @@
+#!/bin/sh
+
+set -eu
+
+service_dir="${1:-}"
+
+if [ -z "$service_dir" ]; then
+    echo "Usage: $0 SERVICE_DIRECTORY" >&2
+    exit 2
+fi
+
+if [ ! -d "$service_dir" ] || [ ! -x "$service_dir/run" ]; then
+    echo "Service must be a directory containing an executable run file:" >&2
+    echo "  $service_dir/run" >&2
+    exit 2
+fi
+
+service_dir="$(readlink -f "$service_dir")"
+service_name="$(basename "$service_dir")"
+
+for active_dir in /var/service /etc/service /etc/runit/runsvdir/default; do
+    if [ -d "$active_dir" ]; then
+        link="$active_dir/$service_name"
+
+        if [ ! -w "$active_dir" ] && [ "$(id -u)" -ne 0 ]; then
+            echo "Activation needs administrator access to: $active_dir" >&2
+            echo "The service definition is ready at: $service_dir" >&2
+            echo "Run this command with the required privileges:" >&2
+            echo "  ln -sfn '$service_dir' '$link'" >&2
+            exit 1
+        fi
+
+        ln -sfn "$service_dir" "$link"
+        echo "Activated Devuan runit service: $service_name"
+        echo "Source: $service_dir"
+        echo "Active: $link"
+        exit 0
+    fi
+done
+
+echo "No Devuan/runit service directory was found." >&2
+echo "Checked: /var/service, /etc/service, /etc/runit/runsvdir/default" >&2
+exit 1

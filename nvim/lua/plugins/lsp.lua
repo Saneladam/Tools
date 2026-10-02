@@ -16,6 +16,7 @@ return {
                 "texlab",
                 "marksman",
                 "bashls",
+                "fortls",
             },
         })
 
@@ -27,6 +28,7 @@ return {
             texlab = {},
             marksman = {},
             bashls = {},
+            fortls = {},
         }
 
         for name, cfg in pairs(servers) do

@@ -1,6 +1,8 @@
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 
+local cell_group = augroup("NotebookCells", { clear = true })
+
 autocmd("BufWritePost", {
     pattern = "*.py",
     callback = function()
@@ -47,7 +49,6 @@ autocmd("FileType", {
     group = cell_group,
     pattern = { "python", "sh", "bash" },
     callback = function()
-        -- vim.fn.matchadd("NotebookCell", "^# %%.*$")
         vim.fn.matchadd("NotebookCell", [[^\s*# %%.*$]])
     end,
 })

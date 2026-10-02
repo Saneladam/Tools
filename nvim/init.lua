@@ -7,4 +7,3 @@ require("config.terminal")
 require("config.lazy")
 
 require("theme.theme")
-

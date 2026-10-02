@@ -1,7 +1,8 @@
 -- ~/.config/nvim/lua/theme/theme.lua
 
-local ok, err = pcall(require, "theme.current")
+local ok = pcall(require, "theme.current")
 
 if not ok then
-    vim.notify("Theme load failed: " .. tostring(err), vim.log.levels.ERROR)
+    -- `theme.current` is an optional per-machine override.
+    pcall(vim.cmd.colorscheme, vim.o.background == "light" and "morning" or "zaibatsu")
 end

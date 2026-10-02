@@ -1,0 +1,27 @@
+#!/bin/sh
+
+set -u
+
+LOG_DIR="$HOME/Logs"
+LOG_FILE="$LOG_DIR/session-service.log"
+mkdir -p "$LOG_DIR"
+exec >>"$LOG_FILE" 2>&1
+
+printf '\n[%s] session-sync started on %s\n' "$(date)" "$(hostname)"
+
+finish()
+{
+    trap - TERM INT HUP
+    printf '[%s] stopping session-sync\n' "$(date)"
+    "$HOME/Tools/bin/session" end
+    exit $?
+}
+
+trap finish TERM INT HUP
+
+"$HOME/Tools/bin/session" start
+
+while :; do
+    sleep 3600 &
+    wait "$!"
+done

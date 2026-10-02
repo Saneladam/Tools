@@ -16,7 +16,7 @@ opt.splitright = true
 opt.clipboard = "unnamedplus"
 
 opt.updatetime = 250
-opt.shell = "/usr/bin/bash"
+opt.shell = vim.env.SHELL or "/bin/sh"
 
 opt.complete:remove("i")
 
@@ -57,5 +57,4 @@ opt.guicursor = "n-v-c:block,i:ver25"
 
 vim.g.mapleader = "\\"
 
--- opt.background = "dark"
--- vim.cmd.colorscheme("sorbet")
+opt.background = "dark"

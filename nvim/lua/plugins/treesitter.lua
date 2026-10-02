@@ -11,6 +11,9 @@ return {
                 "bash",
                 "c",
                 "cpp",
+                "fortran",
+                "markdown",
+                "markdown_inline",
             },
 
             highlight = {
