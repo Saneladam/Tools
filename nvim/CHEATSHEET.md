@@ -34,11 +34,12 @@ Referencia de los atajos y comandos definidos por `~/Tools/nvim`.
 
 | Tecla | Acción |
 | --- | --- |
-| `<F1>` | Diagnóstico flotante bajo el cursor |
+| `<F1>` | Ayuda LSP de la función/símbolo bajo el cursor; diagnóstico si no hay LSP |
 | `<F2>` | Alternar números absolutos y relativos |
 | `<F3>` | Alternar números relativos |
 | `<F6>` | Alternar spellcheck en inglés (`en_us`) |
 | `<F7>` | Seleccionar spellcheck en español (`es`) |
+| `<leader>lh` | Ayuda específica de firma y argumentos LSP |
 | `<leader>us` | Alternar spellcheck con Snacks |
 | `<leader>uw` | Alternar wrap con Snacks |
 | `<leader>uL` | Alternar números relativos con Snacks |

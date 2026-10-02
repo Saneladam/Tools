@@ -58,3 +58,34 @@ opt.guicursor = "n-v-c:block,i:ver25"
 vim.g.mapleader = "\\"
 
 opt.background = "dark"
+
+local function set_float_colors()
+    local normal = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+    local normal_fg = normal.fg or "#cdd6f4"
+    local normal_bg = normal.bg or "#1e1e2e"
+
+    vim.api.nvim_set_hl(0, "NormalFloat", {
+        fg = normal_fg,
+        bg = normal_bg,
+    })
+    vim.api.nvim_set_hl(0, "FloatBorder", {
+        fg = "#89b4fa",
+        bg = normal_bg,
+    })
+    vim.api.nvim_set_hl(0, "Pmenu", {
+        fg = normal_fg,
+        bg = normal_bg,
+    })
+    vim.api.nvim_set_hl(0, "PmenuSel", {
+        fg = normal_bg,
+        bg = "#89b4fa",
+        bold = true,
+    })
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+    group = vim.api.nvim_create_augroup("ReadableFloatingWindows", { clear = true }),
+    callback = set_float_colors,
+})
+
+set_float_colors()

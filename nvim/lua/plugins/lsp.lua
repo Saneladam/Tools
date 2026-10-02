@@ -8,6 +8,23 @@ return {
     config = function()
         require("mason").setup()
 
+        vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
+            vim.lsp.handlers.hover,
+            {
+                border = "rounded",
+                max_width = 100,
+                max_height = 30,
+            }
+        )
+        vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
+            vim.lsp.handlers.signature_help,
+            {
+                border = "rounded",
+                max_width = 100,
+                max_height = 20,
+            }
+        )
+
         require("mason-lspconfig").setup({
             ensure_installed = {
                 "lua_ls",

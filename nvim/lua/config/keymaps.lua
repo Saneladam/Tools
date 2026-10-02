@@ -29,7 +29,21 @@ map("n", "<leader>]", "<cmd>tabnext<CR>")
 map("n", "<leader>v", "<cmd>vsplit<CR>")
 map("n", "<leader>s", "<cmd>split<CR>")
 
-map("n", "<F1>", vim.diagnostic.open_float)
+map("n", "<F1>", function()
+    if #vim.lsp.get_clients({ bufnr = 0 }) > 0 then
+        vim.lsp.buf.hover()
+    else
+        vim.diagnostic.open_float()
+    end
+end, { desc = "LSP hover or diagnostics" })
+
+map("n", "<leader>lh", function()
+    if #vim.lsp.get_clients({ bufnr = 0 }) > 0 then
+        vim.lsp.buf.signature_help()
+    else
+        vim.notify("No LSP client attached to this buffer", vim.log.levels.INFO)
+    end
+end, { desc = "LSP signature help" })
 
 map("n", "<F2>", function()
     vim.opt.number = not vim.opt.number:get()
