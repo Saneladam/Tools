@@ -1,0 +1,142 @@
+#!/bin/sh
+# Muestra el informe de seguridad de ayer (o el más reciente anterior a hoy).
+# Uso:
+#   security-show           # informe completo
+#   security-show -m 10     # mínimo TTY/login: solo WARN/FAIL, máx. N líneas
+
+set -u
+
+REPORT_DIR="${HOME}/Logs/security"
+MINIMAL=0
+MAX_LINES=10
+
+usage()
+{
+    printf 'Uso: %s [-m N]\n' "$(basename "$0")" >&2
+    printf '  (sin flags)  informe completo de ayer\n' >&2
+    printf '  -m N         solo problemas (WARN/FAIL), máximo N líneas\n' >&2
+    exit 2
+}
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -m)
+            MINIMAL=1
+            if [ "$#" -lt 2 ]; then
+                usage
+            fi
+            MAX_LINES="$2"
+            case "$MAX_LINES" in
+                *[!0-9]*|"") usage ;;
+            esac
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+
+today="$(date +%F)"
+yest="$(date -d yesterday +%F 2>/dev/null || true)"
+
+target=""
+
+if [ -n "$yest" ] && [ -f "${REPORT_DIR}/${yest}.log" ]; then
+    target="${REPORT_DIR}/${yest}.log"
+elif [ -e "${REPORT_DIR}/yesterday" ]; then
+    if [ -L "${REPORT_DIR}/yesterday" ]; then
+        target="$(readlink -f "${REPORT_DIR}/yesterday")"
+    else
+        target="${REPORT_DIR}/yesterday"
+    fi
+else
+    for f in $(ls -1 "${REPORT_DIR}"/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].log 2>/dev/null | sort); do
+        b="$(basename "$f" .log)"
+        if [ "$b" \< "$today" ]; then
+            target="$f"
+        fi
+    done
+fi
+
+if [ -z "$target" ] || [ ! -f "$target" ]; then
+    if [ "$MINIMAL" -eq 1 ]; then
+        printf 'Seguridad: sin informe de ayer.\n'
+    else
+        printf 'No hay informe de seguridad de ayer (ni anterior).\n'
+        printf 'Ejecuta: ~/Tools/bin/security-scan\n'
+    fi
+    exit 1
+fi
+
+# --- modo completo ---
+if [ "$MINIMAL" -eq 0 ]; then
+    printf 'Informe de seguridad: %s\n' "$(basename "$target")"
+    printf '%s\n' '------------------------------------------------------------'
+    cat "$target"
+    exit 0
+fi
+
+# --- modo mínimo (-m N): solo WARN/FAIL, resaltados ---
+# Colores solo en TTY
+if [ -t 1 ]; then
+    C_FAIL="$(printf '\033[1;31m')"
+    C_WARN="$(printf '\033[1;33m')"
+    C_RST="$(printf '\033[0m')"
+else
+    C_FAIL=""
+    C_WARN=""
+    C_RST=""
+fi
+
+label="$(basename "$target" .log)"
+# Extraer líneas de hallazgo WARN/FAIL (formato net_selfcheck: NIVEL\ttítulo\tdetalle)
+# También aceptar espacios múltiples por si el log varía.
+tmp_problems="$(mktemp)"
+trap 'rm -f "$tmp_problems"' EXIT INT TERM
+
+awk '
+BEGIN { FS="\t" }
+/^FAIL/ || /^WARN/ {
+    level=$1
+    gsub(/[[:space:]]+$/, "", level)
+    if (level == "FAIL" || level == "WARN") print
+}
+' "$target" >"$tmp_problems"
+
+count="$(wc -l <"$tmp_problems" | tr -d ' ')"
+if [ "$count" -eq 0 ]; then
+    printf 'Seguridad (%s): OK — sin WARN/FAIL.\n' "$label"
+    exit 0
+fi
+
+printf '%sSeguridad (%s): %s problema(s)%s\n' "$C_WARN" "$label" "$count" "$C_RST"
+
+shown=0
+while IFS= read -r line || [ -n "$line" ]; do
+    if [ "$shown" -ge "$MAX_LINES" ]; then
+        rest=$((count - shown))
+        printf '  … (+%s más; ver ~/Logs/security/%s.log)\n' "$rest" "$label"
+        break
+    fi
+    # level is first field (possibly padded)
+    level="$(printf '%s\n' "$line" | awk -F'\t' '{gsub(/[[:space:]]+$/, "", $1); print $1}')"
+    title="$(printf '%s\n' "$line" | awk -F'\t' '{print $2}')"
+    detail="$(printf '%s\n' "$line" | awk -F'\t' '{print $3}')"
+    case "$level" in
+        FAIL) c="$C_FAIL" ;;
+        WARN) c="$C_WARN" ;;
+        *)    c="" ;;
+    esac
+    if [ -n "$detail" ]; then
+        printf '  %s%s%s  %s — %s\n' "$c" "$level" "$C_RST" "$title" "$detail"
+    else
+        printf '  %s%s%s  %s\n' "$c" "$level" "$C_RST" "$title"
+    fi
+    shown=$((shown + 1))
+done <"$tmp_problems"
+
+exit 0

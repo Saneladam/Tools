@@ -1,0 +1,38 @@
+#!/bin/sh
+# Defensive local security scan → ~/Logs/security/YYYY-MM-DD.log
+# Uses only ~/net_selfcheck.py (no WiFi/LAN deep scan).
+
+set -u
+
+REPORT_DIR="${HOME}/Logs/security"
+NET_SELFCHECK="${HOME}/net_selfcheck.py"
+mkdir -p "$REPORT_DIR"
+
+today="$(date +%F)"
+report="${REPORT_DIR}/${today}.log"
+latest="${REPORT_DIR}/latest.log"
+
+if [ ! -x "$NET_SELFCHECK" ]; then
+    printf 'security-scan: no ejecutable: %s\n' "$NET_SELFCHECK" >&2
+    exit 127
+fi
+
+{
+    printf '=== Informe de seguridad %s ===\n' "$(date '+%F %H:%M:%S %z')"
+    printf 'Host: %s\n' "$(hostname)"
+    printf 'Herramienta: net_selfcheck.py (auditoría defensiva local)\n'
+    printf '\n'
+    "$NET_SELFCHECK"
+} >"$report" 2>&1
+rc=$?
+
+cp -f "$report" "$latest"
+
+# yesterday symlink → informe del día anterior si existe
+yest="$(date -d yesterday +%F 2>/dev/null || true)"
+if [ -n "$yest" ] && [ -f "${REPORT_DIR}/${yest}.log" ]; then
+    ln -sfn "${yest}.log" "${REPORT_DIR}/yesterday"
+fi
+
+printf 'security-scan: guardado %s (rc=%s)\n' "$report" "$rc" >&2
+exit "$rc"

@@ -208,6 +208,34 @@ summary_end()
     echo "Session closed."
 }
 
+
+###############################################################################
+# Security (local defensive; also available as runit security-scan)
+###############################################################################
+
+security_show_yesterday()
+{
+    section "Security (ayer)"
+
+    if [ -x "$HOME/Tools/bin/security-show" ]; then
+        # TTY/login-friendly: solo problemas, máx. 10 líneas
+        "$HOME/Tools/bin/security-show" -m 10 || true
+    else
+        echo "security-show no disponible"
+    fi
+}
+
+security_scan_now()
+{
+    section "Security scan"
+
+    if [ -x "$HOME/Tools/bin/security-scan" ]; then
+        "$HOME/Tools/bin/security-scan" || true
+    else
+        echo "security-scan no disponible"
+    fi
+}
+
 ###############################################################################
 # Commands
 ###############################################################################
@@ -217,6 +245,7 @@ start()
     system_check
     git_pull
     notes_prepare
+    security_show_yesterday
     # environment_start
     summary_start
 }
@@ -227,6 +256,7 @@ end()
     git_push
     backup
     stats
+    security_scan_now
     summary_end
 }
 

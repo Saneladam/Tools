@@ -1,8 +1,9 @@
 # Functionality
-alias sourcez='source ~/.zshrc'
+alias sourcez='unalias gree watch_gree wg 2>/dev/null; source ~/.zshrc'
 alias sourceb='source ~/.bashrc'
 alias watch_sq='watch "squeue -u romguil"'
 alias watch_ps='watch "ps auc"'
+alias wg='watch_gree'
 
 # Improvement
 alias qutebrowser='QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu" qutebrowser'

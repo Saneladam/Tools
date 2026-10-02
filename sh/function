@@ -167,3 +167,26 @@ function get_appid() {
 #         [ -z $1 ] && exit
 #         tar -cJf ${1}.tar.xz $1/
 # }
+
+# Monitor por patrón (binario real en Tools/bin/gree — evita choques alias/función)
+unalias gree 2>/dev/null || true
+unalias watch_gree 2>/dev/null || true
+
+gree() {
+  "$HOME/Tools/bin/gree" "$@"
+}
+
+watch_gree() {
+  local pat="${1:-}"
+  local dir="${2:-.}"
+  local log="${3:-}"
+  if [ -z "$pat" ]; then
+    echo "uso: watch_gree <patrón> [dir] [log]"
+    return 1
+  fi
+  if [ -n "$log" ]; then
+    watch -n 2 "$HOME/Tools/bin/gree" "$pat" "$dir" "$log"
+  else
+    watch -n 2 "$HOME/Tools/bin/gree" "$pat" "$dir"
+  fi
+}

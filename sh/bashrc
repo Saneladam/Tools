@@ -78,3 +78,23 @@ export WM_PROJECT_DIR=/opt/OpenFOAM/OpenFOAM-13
 export PATH=/usr/lib/openmpi/bin:$PATH
 export LD_LIBRARY_PATH=/usr/lib/openmpi/lib:$LD_LIBRARY_PATH
 ###############################################################################
+
+###############################################################################
+# Security briefing (yesterday, minimal) — login / TTY
+###############################################################################
+if [ -z "${SECURITY_SHOW_DONE:-}" ] && [ -x "$HOME/Tools/bin/security-show" ]; then
+    _sec_tty="$(tty 2>/dev/null || true)"
+    _sec_login=0
+    if shopt -q login_shell 2>/dev/null; then
+        _sec_login=1
+    fi
+    case "$_sec_tty" in
+        /dev/tty[0-9]*|/dev/tty[0-9][0-9]*) _sec_login=1 ;;
+    esac
+    if [ "$_sec_login" -eq 1 ]; then
+        export SECURITY_SHOW_DONE=1
+        "$HOME/Tools/bin/security-show" -m 10 || true
+    fi
+    unset _sec_tty _sec_login
+fi
+

@@ -2,42 +2,102 @@
 
 set -eu
 
-service_dir="${1:-}"
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
-if [ -z "$service_dir" ]; then
-    echo "Usage: $0 SERVICE_DIRECTORY" >&2
+usage()
+{
+    echo "Usage: $0 [SERVICE_DIRECTORY|--all]" >&2
+    echo "  With one SERVICE_DIRECTORY: activate only that service." >&2
+    echo "  With no args or --all: activate every sibling dir with executable run." >&2
     exit 2
-fi
+}
 
-if [ ! -d "$service_dir" ] || [ ! -x "$service_dir/run" ]; then
-    echo "Service must be a directory containing an executable run file:" >&2
-    echo "  $service_dir/run" >&2
-    exit 2
-fi
-
-service_dir="$(readlink -f "$service_dir")"
-service_name="$(basename "$service_dir")"
-
-for active_dir in /var/service /etc/service /etc/runit/runsvdir/default; do
-    if [ -d "$active_dir" ]; then
-        link="$active_dir/$service_name"
-
-        if [ ! -w "$active_dir" ] && [ "$(id -u)" -ne 0 ]; then
-            echo "Activation needs administrator access to: $active_dir" >&2
-            echo "The service definition is ready at: $service_dir" >&2
-            echo "Run this command with the required privileges:" >&2
-            echo "  ln -sfn '$service_dir' '$link'" >&2
-            exit 1
+find_active_dir()
+{
+    for active_dir in /var/service /etc/service /etc/runit/runsvdir/default; do
+        if [ -d "$active_dir" ]; then
+            printf '%s\n' "$active_dir"
+            return 0
         fi
+    done
+    return 1
+}
 
-        ln -sfn "$service_dir" "$link"
-        echo "Activated Devuan runit service: $service_name"
-        echo "Source: $service_dir"
-        echo "Active: $link"
-        exit 0
+activate_one()
+{
+    service_dir="$1"
+
+    if [ ! -d "$service_dir" ] || [ ! -x "$service_dir/run" ]; then
+        echo "Service must be a directory containing an executable run file:" >&2
+        echo "  $service_dir/run" >&2
+        return 2
     fi
-done
 
-echo "No Devuan/runit service directory was found." >&2
-echo "Checked: /var/service, /etc/service, /etc/runit/runsvdir/default" >&2
-exit 1
+    service_dir="$(readlink -f "$service_dir")"
+    service_name="$(basename "$service_dir")"
+
+    if ! active_dir="$(find_active_dir)"; then
+        echo "No Devuan/runit service directory was found." >&2
+        echo "Checked: /var/service, /etc/service, /etc/runit/runsvdir/default" >&2
+        return 1
+    fi
+
+    link="${active_dir}/${service_name}"
+
+    if [ -w "$active_dir" ] || [ "$(id -u)" -eq 0 ]; then
+        ln -sfn "$service_dir" "$link"
+    elif sudo -n ln -sfn "$service_dir" "$link" 2>/dev/null; then
+        :
+    else
+        echo "Activation needs administrator access to: $active_dir" >&2
+        echo "The service definition is ready at: $service_dir" >&2
+        echo "Run this command with the required privileges:" >&2
+        echo "  sudo ln -sfn '$service_dir' '$link'" >&2
+        return 1
+    fi
+
+    echo "Activated Devuan runit service: $service_name"
+    echo "Source: $service_dir"
+    echo "Active: $link"
+    return 0
+}
+
+mode="all"
+target=""
+case "${1:-}" in
+    "")
+        mode="all"
+        ;;
+    --all)
+        mode="all"
+        ;;
+    -h|--help)
+        usage
+        ;;
+    *)
+        if [ "$#" -ne 1 ]; then
+            usage
+        fi
+        mode="one"
+        target="$1"
+        ;;
+esac
+
+rc=0
+if [ "$mode" = "one" ]; then
+    activate_one "$target" || rc=$?
+else
+    found=0
+    for d in "$SCRIPT_DIR"/*/; do
+        [ -d "$d" ] || continue
+        [ -x "${d}run" ] || continue
+        found=1
+        activate_one "$d" || rc=$?
+    done
+    if [ "$found" -eq 0 ]; then
+        echo "No service directories with executable run under: $SCRIPT_DIR" >&2
+        exit 2
+    fi
+fi
+
+exit "$rc"

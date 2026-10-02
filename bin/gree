@@ -1,0 +1,21 @@
+#!/bin/sh
+# gree — count + list paths matching *pattern* (iname). Optional log tail.
+# usage: gree <pattern> [dir] [log]
+set -eu
+pat="${1:-}"
+dir="${2:-.}"
+log="${3:-}"
+if [ -z "$pat" ]; then
+  echo "uso: gree <patrón> [dir] [log]" >&2
+  exit 1
+fi
+list=$(find "$dir" -iname "*${pat}*" \( -type f -o -type d \) 2>/dev/null | sort || true)
+n=$(printf '%s\n' "$list" | sed '/^$/d' | wc -l | tr -d ' ')
+printf 'gree: %s · *%s* · %s\n' "$n" "$pat" "$dir"
+if [ "$n" -gt 0 ]; then
+  printf '%s\n' "$list"
+fi
+if [ -n "$log" ] && [ -f "$log" ]; then
+  echo "--- tail -50 | grep -A2 ($pat|%%) · $log ---"
+  tail -n 50 "$log" | grep -n -E -A2 --color=always -e "$pat" -e '%%' || true
+fi
