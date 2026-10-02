@@ -4,25 +4,35 @@ return {
     event = { "BufReadPre", "BufNewFile" },
 
     config = function()
-        require("nvim-treesitter").setup({
-            ensure_installed = {
-                "lua",
-                "python",
-                "bash",
-                "c",
-                "cpp",
-                "fortran",
-                "markdown",
-                "markdown_inline",
-            },
+        local treesitter = require("nvim-treesitter")
+        local parsers = {
+            "bash",
+            "c",
+            "cpp",
+            "fortran",
+            "lua",
+            "markdown",
+            "markdown_inline",
+            "python",
+        }
 
-            highlight = {
-                enable = true,
-            },
+        treesitter.setup({})
 
-            indent = {
-                enable = true,
-            },
+        local installed = treesitter.get_installed()
+        local missing = vim.tbl_filter(function(parser)
+            return not vim.list_contains(installed, parser)
+        end, parsers)
+
+        if #missing > 0 then
+            treesitter.install(missing)
+        end
+
+        vim.api.nvim_create_autocmd("FileType", {
+            pattern = { "bash", "c", "cpp", "fortran", "lua", "markdown", "python" },
+            callback = function(args)
+                pcall(vim.treesitter.start, args.buf)
+                vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            end,
         })
     end,
 }

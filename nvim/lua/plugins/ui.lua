@@ -10,7 +10,9 @@ return {
         config = function()
             require("neo-tree").setup({
                 filesystem = {
-                    follow_current_file = true,
+                    follow_current_file = {
+                        enabled = true,
+                    },
                     hijack_netrw_behavior = "open_default",
                 },
                 window = {
@@ -114,8 +116,10 @@ return {
             file_types = { "markdown", "quarto" },
             heading = {
                 enabled = true,
-                position = "overlay",
-                icons = { "󰫎 ", "󰫏 ", "󰫐 ", "󰫑 ", "󰫒 ", "󰫓 " },
+                position = "inline",
+                -- Keep these in ordinary Unicode instead of private-use
+                -- Nerd Font codepoints so they render in regular Iosevka.
+                icons = { "● ", "◆ ", "■ ", "◇ ", "▸ ", "· " },
             },
             latex = {
                 enabled = true,

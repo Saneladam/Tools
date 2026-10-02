@@ -13,6 +13,6 @@ local function toggle_terminal()
     vim.cmd("terminal")
 end
 
-vim.keymap.set("n", "<C-b>", toggle_terminal)
+vim.keymap.set("n", "<C-m>", toggle_terminal)
 
 vim.keymap.set("t", "jk", [[<C-\><C-n>]])

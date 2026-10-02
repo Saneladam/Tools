@@ -27,7 +27,7 @@ Referencia de los atajos y comandos definidos por `~/Tools/nvim`.
 | `<leader>t` | `:tabnew` |
 | `<leader>c` | `:tabclose` |
 | `<leader>[` / `<leader>]` | Pestaña anterior / siguiente |
-| `<C-b>` | Abrir/cerrar terminal inferior de 10 líneas |
+| `<C-m>` | Abrir/cerrar terminal inferior de 10 líneas |
 | `jk` en terminal | Salir del modo terminal |
 
 ## Diagnósticos, números y spellcheck
@@ -269,10 +269,27 @@ background     dark
 :set filetype?
 :set runtimepath?
 :scriptnames
-:verbose nmap <C-b>
+:verbose nmap <C-m>
 :verbose nmap <leader>ff
 :verbose imap <Tab>
 ```
 
 `:verbose map` indica también el archivo que creó el mapping, útil cuando dos
 plugins compiten por la misma combinación.
+
+## Auditoría de conflictos
+
+No hay dos mappings registrados para la misma combinación y el mismo modo.
+Estas combinaciones parecen repetidas, pero están separadas correctamente:
+
+| Combinación | Modos | Resultado |
+| --- | --- | --- |
+| `<C-j>` / `<C-k>` | normal / inserción | Navegar ventanas en normal; cambiar sugerencia en completion |
+| `jk` | inserción / terminal | Salir de inserción; salir del modo terminal |
+| `<F5>` | buffer local | Ejecutar Python, Bash o gnuplot según `filetype` |
+| `<Tab>` | inserción | Confirmar completion; no cambia el modo normal |
+| `<C-r>` | todos | No está remapeado; conserva el comportamiento estándar |
+| `<C-b>` | normal | No está ocupado por esta configuración; queda libre para tmux |
+
+`<F2>` alterna números absolutos y relativos, mientras que `<F3>` alterna
+solo los relativos. Es una pequeña redundancia intencionada, no un conflicto.
