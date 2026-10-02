@@ -156,6 +156,18 @@ return {
                 -- Nerd Font codepoints so they render in regular Iosevka.
                 icons = { "● ", "◆ ", "■ ", "◇ ", "▸ ", "· " },
             },
+            code = {
+                language_icon = false,
+            },
+            overrides = {
+                -- LSP hover/signature buffers are Markdown `nofile` buffers.
+                -- Keep their text readable without Nerd Font decorations.
+                buftype = {
+                    nofile = {
+                        enabled = false,
+                    },
+                },
+            },
             latex = {
                 enabled = true,
                 -- Si no deseas instalar utilidades externas de renderizado de latex, 
