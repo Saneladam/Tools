@@ -15,6 +15,41 @@ return {
                     },
                     hijack_netrw_behavior = "open_default",
                 },
+                default_component_configs = {
+                    indent = {
+                        indent_marker = "│",
+                        last_indent_marker = "└",
+                        expander_collapsed = ">",
+                        expander_expanded = "v",
+                    },
+                    icon = {
+                        folder_closed = ">",
+                        folder_open = "v",
+                        folder_empty = ".",
+                        folder_empty_open = ".",
+                        default = ".",
+                        -- Do not ask nvim-web-devicons for Nerd Font glyphs.
+                        provider = function(icon, node)
+                            if node.type == "file" or node.type == "terminal" then
+                                icon.text = "."
+                            end
+                            return icon
+                        end,
+                    },
+                    git_status = {
+                        symbols = {
+                            added = "+",
+                            deleted = "-",
+                            modified = "~",
+                            renamed = ">",
+                            untracked = "?",
+                            ignored = ".",
+                            unstaged = "!",
+                            staged = "=",
+                            conflict = "!",
+                        },
+                    },
+                },
                 window = {
                     width = 28,
                 },
