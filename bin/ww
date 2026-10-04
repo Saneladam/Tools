@@ -1,0 +1,268 @@
+#!/usr/bin/env bash
+# ww — watch work: need/options + .WORKING + "+name"
+# uso: ww [-w] [-c] [-T] [-t] [ROOT...]
+set -euo pipefail
+WATCH=0 COUNT=0 NOLINES=0 SHOWTIME=0
+ROOTS=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -w|--watch) WATCH=1; shift ;;
+    -c|--count) COUNT=1; shift ;;
+    -T|--no-lines) NOLINES=1; shift ;;
+    -t|--time) SHOWTIME=1; shift ;;
+    -h|--help)
+      cat <<'H'
+uso: ww [-w] [-c] [-T] [-t] [ROOT...]
+  arriba: OPCIONES (need=/sudo=/option= o auto)
+  .WORKING = en curso   +nombre = completado
+  -t STARTED   -w watch  -c cuentas  -T sin líneas
+H
+      exit 0 ;;
+    -*) echo "flag desconocida: $1" >&2; exit 2 ;;
+    *) ROOTS+=("$1"); shift ;;
+  esac
+done
+((${#ROOTS[@]})) || ROOTS=("$HOME/Tools" "$HOME/Games" "$HOME/Projects" "$HOME" "/workspace")
+
+TMP=$(mktemp) DONE=$(mktemp) NEED=$(mktemp)
+trap 'rm -f "$TMP" "$DONE" "$NEED"' EXIT
+
+kv() {
+  local file="$1" key="$2"
+  [[ -r "$file" ]] || return 0
+  sed -n "s/^[[:space:]]*${key}=//p" "$file" | head -n1
+}
+
+started_of() {
+  local file="$1" s
+  s=$(kv "$file" started)
+  [[ -z "$s" ]] && s=$(kv "$file" updated)
+  if [[ -n "$s" && "$s" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})T([0-9]{2}:[0-9]{2}) ]]; then
+    printf '%s %s' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+    return 0
+  fi
+  [[ -n "$s" ]] && { printf '%s' "$s"; return 0; }
+  date -r "$file" '+%Y-%m-%d %H:%M' 2>/dev/null || echo "?"
+}
+
+declare -A NEED_SEEN=()
+add_need() {
+  # kind \t where \t option  (dedupe by option text)
+  local kind="$1" where="$2" opt="$3"
+  [[ -n "$opt" ]] || return 0
+  [[ -n "${NEED_SEEN[$opt]:-}" ]] && return 0
+  NEED_SEEN[$opt]=1
+  printf '%s\t%s\t%s\n' "$kind" "$where" "$opt" >>"$NEED"
+}
+
+collect() {
+  local root f d agent task when base note path
+  declare -A SEEN=() SEEN_DONE=()
+  : >"$TMP"; : >"$DONE"; : >"$NEED"
+
+  for root in "${ROOTS[@]}"; do
+    [[ -d "$root" ]] || continue
+    while IFS= read -r -d '' f; do
+      d=$(dirname "$f")
+      d=$(readlink -f "$d" 2>/dev/null || printf '%s' "$d")
+      [[ -n "${SEEN[$d]:-}" ]] && continue
+      SEEN[$d]=1
+      agent=$(kv "$f" agent); [[ -n "$agent" ]] || agent="?"
+      task=$(kv "$f" task); [[ -n "$task" ]] || task=$(kv "$f" focus); [[ -n "$task" ]] || task="—"
+      when=$(started_of "$f")
+      printf '%s\t%s\t%s\t%s\n' "$agent" "$d" "$task" "$when" >>"$TMP"
+      # explicit options from marker
+      n=$(kv "$f" need); [[ -n "$n" ]] && add_need "NEED" "$d" "$n"
+      s=$(kv "$f" sudo); [[ -n "$s" ]] && add_need "SUDO" "$d" "$s"
+      o=$(kv "$f" option); [[ -n "$o" ]] && add_need "OPT" "$d" "$o"
+    done < <(find "$root" -name .WORKING -type f -print0 2>/dev/null | sort -z)
+
+    while IFS= read -r -d '' f; do
+      d=$(dirname "$f")
+      d=$(readlink -f "$d" 2>/dev/null || printf '%s' "$d")
+      base=$(basename "$f")
+      key="$d/$base"
+      [[ -n "${SEEN_DONE[$key]:-}" ]] && continue
+      SEEN_DONE[$key]=1
+      path=$(kv "$f" path)
+      note=$(kv "$f" note)
+      [[ -n "$note" ]] || note=$(kv "$f" ok)
+      if [[ -n "$path" && -n "$note" ]]; then note="$path · $note"
+      elif [[ -n "$path" ]]; then note="$path"
+      elif [[ -z "$note" ]]; then note="—"
+      fi
+      when=$(started_of "$f")
+      printf '%s\t%s\t%s\t%s\n' "$base" "$d" "$note" "$when" >>"$DONE"
+      n=$(kv "$f" need); [[ -n "$n" ]] && add_need "NEED" "$d/$base" "$n"
+      s=$(kv "$f" sudo); [[ -n "$s" ]] && add_need "SUDO" "$d/$base" "$s"
+      o=$(kv "$f" option); [[ -n "$o" ]] && add_need "OPT" "$d/$base" "$o"
+    done < <(find "$root" -name '+*' -type f -print0 2>/dev/null | sort -z)
+  done
+
+  # auto: void runit links missing (only if services dir exists)
+  if [[ -d "$HOME/Tools/services/void/security-scan" ]]; then
+    if [[ ! -e /var/service/security-scan ]]; then
+      add_need "SUDO" "runit" "sudo ln -sfn ~/Tools/services/void/security-scan /var/service/security-scan"
+    fi
+  fi
+  if [[ -d "$HOME/Tools/services/void/session-sync" ]]; then
+    if [[ ! -e /var/service/session-sync ]]; then
+      add_need "SUDO" "runit" "sudo ln -sfn ~/Tools/services/void/session-sync /var/service/session-sync"
+    fi
+  fi
+}
+
+# one shared bar width for all sections
+rule_width() {
+  local showt="$1" wa=5 wd=3 wt=4 ws=4 wkind=5 wwhere=5 wopt=6
+  local line
+  while IFS=$'\t' read -r a b c d || [[ -n "${a:-}" ]]; do
+    [[ -z "${a:-}" ]] && continue
+    ((${#a}>wa)) && wa=${#a}
+    ((${#b}>wd)) && wd=${#b}
+    ((${#c}>wt)) && wt=${#c}
+    ((${#d}>ws)) && ws=${#d}
+  done < <(cat "$TMP" "$DONE" 2>/dev/null || true)
+  while IFS=$'\t' read -r a b c || [[ -n "${a:-}" ]]; do
+    [[ -z "${a:-}" ]] && continue
+    ((${#a}>wkind)) && wkind=${#a}
+    ((${#b}>wwhere)) && wwhere=${#b}
+    ((${#c}>wopt)) && wopt=${#c}
+  done < "$NEED"
+  (( wt > 48 )) && wt=48
+  (( wopt > 72 )) && wopt=72
+  # widths of the three layouts; take max bar
+  local w1 w2 w3
+  w1=$(( wkind + wwhere + wopt + 4 ))
+  if (( showt )); then
+    w2=$(( wa + wd + wt + ws + 6 ))
+    w3=$(( wa + wd + wt + ws + 6 ))
+  else
+    w2=$(( wa + wd + wt + 4 ))
+    w3=$(( wa + wd + wt + 4 ))
+  fi
+  local m=$w1
+  (( w2 > m )) && m=$w2
+  (( w3 > m )) && m=$w3
+  (( m < 60 )) && m=60
+  (( m > 80 )) && m=80
+  printf '%s' "$m"
+}
+
+draw_rule() {
+  local w="$1"
+  (( NOLINES )) && return 0
+  printf '%*s\n' "$w" '' | tr ' ' '-'
+}
+
+print_table() {
+  local n d k showt="$SHOWTIME" bar
+  n=$(grep -c . "$TMP" 2>/dev/null || true); n=${n:-0}
+  d=$(grep -c . "$DONE" 2>/dev/null || true); d=${d:-0}
+  k=$(grep -c . "$NEED" 2>/dev/null || true); k=${k:-0}
+  if (( COUNT )); then
+    printf 'ww: %s need, %s working, %s done\n' "$k" "$n" "$d"
+    return 0
+  fi
+  bar=$(rule_width "$showt")
+
+  printf '\n'
+  printf 'ww  %s need · %s working · %s done\n' "$k" "$n" "$d"
+
+  # --- OPCIONES (always) ---
+  printf '\n'
+  printf '%s\n' "KIND   WHERE                    OPTION"
+  draw_rule "$bar"
+  if (( k == 0 )); then
+    printf '%s\n' "—      —                        nada pendiente"
+  else
+    sort -t$'\t' -k1,1 -k2,2 "$NEED" | awk -F '\t' '
+    {
+      kind=$1; where=$2; opt=$3
+      printf "%-6s %-24s\n", kind, where
+      printf "%s\n\n", opt
+    }'
+    # sort -t$'\t' -k1,1 -k2,2 "$NEED" | awk -F '\t' -v bar="$bar" '
+    # {
+    #   kind=$1; where=$2; opt=$3
+    #   if (length(opt)>72*length(opt)>72) opt=substr(opt,1,71) "…"
+    #   printf "%-6s %-24s %s\n", kind, where, opt
+    # }'
+  fi
+
+  if (( n > 0 )); then
+    sort -t$'\t' -k1,1 -k2,2 "$TMP" | awk -F '\t' -v showt="$showt" -v bar="$bar" -v nolines="$NOLINES" '
+    BEGIN { wa=5; wd=3; wt=4; ws=4 }
+    {
+      if (length($1)>wa) wa=length($1)
+      if (length($2)>wd) wd=length($2)
+      if (length($3)>wt) wt=length($3)
+      if (length($4)>ws) ws=length($4)
+      row[++n]=$0
+    }
+    END {
+      if (wt>48) wt=48
+      printf "\n"
+      if (showt)
+        printf "%-*s  %-*s  %-*s  %s\n", wa, "AGENT", wd, "DIR", wt, "TASK", "STARTED"
+      else
+        printf "%-*s  %-*s  %s\n", wa, "AGENT", wd, "DIR", "TASK"
+      if (!nolines) {
+        rule=sprintf("%*s", bar, ""); gsub(/ /, "-", rule); print rule
+      }
+      for (i=1;i<=n;i++) {
+        split(row[i], f, "\t")
+        task=f[3]
+        if (length(task)>wt) task=substr(task,1,wt-1) "…"
+        if (showt)
+          printf "%-*s  %-*s  %-*s  %s\n", wa, f[1], wd, f[2], wt, task, f[4]
+        else
+          printf "%-*s  %-*s  %s\n", wa, f[1], wd, f[2], task
+      }
+    }'
+  fi
+
+  if (( d > 0 )); then
+    sort -t$'\t' -k1,1 -k2,2 "$DONE" | awk -F '\t' -v showt="$showt" -v bar="$bar" -v nolines="$NOLINES" '
+    BEGIN { wa=5; wd=3; wt=4; ws=4 }
+    {
+      if (length($1)>wa) wa=length($1)
+      if (length($2)>wd) wd=length($2)
+      if (length($3)>wt) wt=length($3)
+      if (length($4)>ws) ws=length($4)
+      row[++n]=$0
+    }
+    END {
+      if (wt>56) wt=56
+      printf "\n"
+      if (showt)
+        printf "%-*s  %-*s  %-*s  %s\n", wa, "DONE", wd, "DIR", wt, "NOTE", "WHEN"
+      else
+        printf "%-*s  %-*s  %s\n", wa, "DONE", wd, "DIR", "NOTE"
+      if (!nolines) {
+        rule=sprintf("%*s", bar, ""); gsub(/ /, "-", rule); print rule
+      }
+      for (i=1;i<=n;i++) {
+        split(row[i], f, "\t")
+        note=f[3]
+        if (length(note)>wt) note=substr(note,1,wt-1) "…"
+        if (showt)
+          printf "%-*s  %-*s  %-*s  %s\n", wa, f[1], wd, f[2], wt, note, f[4]
+        else
+          printf "%-*s  %-*s  %s\n", wa, f[1], wd, f[2], note
+      }
+    }'
+  fi
+  printf '\n'
+}
+
+if (( WATCH )); then
+  args=()
+  (( COUNT )) && args+=(-c)
+  (( NOLINES )) && args+=(-T)
+  (( SHOWTIME )) && args+=(-t)
+  args+=("${ROOTS[@]}")
+  exec watch -n 2 -c "$0 ${args[*]}"
+fi
+collect
+print_table

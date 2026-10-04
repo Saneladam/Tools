@@ -167,33 +167,3 @@ function get_appid() {
 #         [ -z $1 ] && exit
 #         tar -cJf ${1}.tar.xz $1/
 # }
-
-# ww = watch work (.WORKING dirs). gree = name pattern search (legacy).
-unalias gree watch_gree ww wg 2>/dev/null || true
-
-gree() {
-  "$HOME/Tools/bin/gree" "$@"
-}
-
-watch_gree() {
-  local pat="${1:-}"
-  local dir="${2:-.}"
-  local log="${3:-}"
-  if [ -z "$pat" ]; then
-    echo "uso: watch_gree <patrón> [dir] [log]  (legacy; prefer ww)"
-    return 1
-  fi
-  if [ -n "$log" ]; then
-    watch -n 2 "$HOME/Tools/bin/gree" "$pat" "$dir" "$log"
-  else
-    watch -n 2 "$HOME/Tools/bin/gree" "$pat" "$dir"
-  fi
-}
-
-ww() {
-  "$HOME/Tools/bin/ww" "$@"
-}
-
-watch_ww() {
-  "$HOME/Tools/bin/ww" -w "$@"
-}

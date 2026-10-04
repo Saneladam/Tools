@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# ww-done — mark a completed deliverable: write +NAME and remove .WORKING in DIR
+# uso: ww-done <name> [dir] [note...]
+set -euo pipefail
+name="${1:-}"
+dir="${2:-.}"
+shift || true
+[[ -n "$name" ]] || { echo "uso: ww-done <nombre> [dir] [nota...]"; exit 2; }
+[[ "$name" == +* ]] || name="+$name"
+shift || true
+note="${*:-ok $(date -Iseconds)}"
+dir=$(readlink -f "$dir")
+printf '%s\n' "$note" >"$dir/$name"
+rm -f "$dir/.WORKING"
+echo "done: $dir/$name"

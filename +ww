@@ -1,0 +1,4 @@
+agent=Linux
+path=/home/akash/Tools/bin/ww
+ok=0
+note=check options -h
