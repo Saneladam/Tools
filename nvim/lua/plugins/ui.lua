@@ -169,9 +169,12 @@ return {
                 },
             },
             latex = {
-                enabled = true,
-                -- Si no deseas instalar utilidades externas de renderizado de latex, 
-                -- puedes dejarlo en false para evitar el warning de 'utftex'.
+                -- Keep the shared config quiet on machines without LaTeX
+                -- parsers and utftex/latex2text.
+                enabled = false,
+            },
+            yaml = {
+                enabled = false,
             },
             html = {
                 enabled = false, -- Desactiva si no trabajas con documentación web

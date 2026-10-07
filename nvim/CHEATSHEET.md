@@ -27,7 +27,7 @@ Referencia de los atajos y comandos definidos por `~/Tools/nvim`.
 | `<leader>t` | `:tabnew` |
 | `<leader>c` | `:tabclose` |
 | `<leader>[` / `<leader>]` | Pestaña anterior / siguiente |
-| `<C-m>` | Abrir/cerrar terminal inferior de 10 líneas |
+| `<leader>T` | Abrir/cerrar terminal inferior de 10 líneas |
 | `jk` en terminal | Salir del modo terminal |
 
 ## Diagnósticos, números y spellcheck
@@ -270,7 +270,7 @@ background     dark
 :set filetype?
 :set runtimepath?
 :scriptnames
-:verbose nmap <C-m>
+:verbose nmap <leader>T
 :verbose nmap <leader>ff
 :verbose imap <Tab>
 ```

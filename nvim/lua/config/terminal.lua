@@ -13,6 +13,14 @@ local function toggle_terminal()
     vim.cmd("terminal")
 end
 
-vim.keymap.set("n", "<C-m>", toggle_terminal)
+-- Do not map <C-m>: terminals send it as carriage return, and Neovim treats
+-- it as the same key as <Enter>. Mapping it would make Enter open a terminal.
+-- Use the command below when a terminal is needed:
+--   :lua require('config.terminal').toggle()
+vim.keymap.set("n", "<leader>T", toggle_terminal, { desc = "Toggle terminal" })
 
 vim.keymap.set("t", "jk", [[<C-\><C-n>]])
+
+return {
+    toggle = toggle_terminal,
+}

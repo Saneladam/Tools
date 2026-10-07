@@ -25,4 +25,10 @@ require("lazy").setup({
     checker = {
         enabled = false,
     },
+
+    -- The shared config must not try to bootstrap a user-specific Lua/Rocks
+    -- tree (which also makes health report another machine's home directory).
+    rocks = {
+        enabled = false,
+    },
 })

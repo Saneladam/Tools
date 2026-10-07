@@ -18,7 +18,9 @@ this directory.
   - `keymaps.lua`: global mappings and toggles.
   - `autocmds.lua`: cursor restore, format/check hooks, notebook cells,
     language templates and F5 execution.
-  - `terminal.lua`: one split terminal toggled with `<C-b>`.
+  - `terminal.lua`: one split terminal toggled with `<leader>T`; Enter and
+    `Ctrl-M` are deliberately left unmapped because Neovim treats them as the
+    same key.
   - `lazy.lua`: bootstraps `lazy.nvim` and imports `lua/plugins/`; the shared
     `Tools` baseline intentionally loads plugin specs eagerly.
 - `lua/plugins/`: one focused Lazy specification per concern.

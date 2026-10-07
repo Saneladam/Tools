@@ -1,6 +1,12 @@
 return {
     "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
+    build = function()
+        -- Parser compilation needs the external tree-sitter CLI. Do not make
+        -- startup/install fail on machines where it is not installed yet.
+        if vim.fn.executable("tree-sitter") == 1 then
+            vim.cmd("TSUpdate")
+        end
+    end,
     event = { "BufReadPre", "BufNewFile" },
 
     config = function()
@@ -23,7 +29,7 @@ return {
             return not vim.list_contains(installed, parser)
         end, parsers)
 
-        if #missing > 0 then
+        if #missing > 0 and vim.fn.executable("tree-sitter") == 1 then
             treesitter.install(missing)
         end
 
