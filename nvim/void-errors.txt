@@ -1,0 +1,677 @@
+[nvim-treesitter/install/c] error: Error during "tree-sitter build": [string "?"]:324: ENOENT: no such f
+[nvim-treesitter/install/markdown_inline] error: Error during "tree-sitter build": [string "?"]:324: ENO
+[nvim-treesitter/install/lua] error: Error during "tree-sitter build": [string "?"]:324: ENOENT: no such
+ file or directory (cmd): 'tree-sitter'[nvim-treesitter/install/markdown] error: Error during "tree-sitter build": [string "?"]:324: ENOENT: no
+[nvim-treesitter/install/bash] error: Error during "tree-sitter build": [string "?"]:324: ENOENT: no suc
+h file or directory (cmd): 'tree-sitter'
+
+==============================================================================
+lazy:                                                               2 ⚠️  1 ❌
+
+lazy.nvim ~
+- {lazy.nvim} version `11.17.5`
+- ✅ OK {git} `version 2.55.0`
+- ✅ OK no existing packages found by other package managers
+- ✅ OK packer_compiled.lua not found
+
+luarocks ~
+- checking `hererocks` installation
+- ✅ OK no plugins require `luarocks`, so you can ignore any warnings below
+- ✅ OK {python3} `Python 3.14.7`
+- ❌ ERROR {/home/akash/.local/share/nvim/lazy-rocks/hererocks/bin/luarocks} not installed
+- ⚠️ WARNING {/home/akash/.local/share/nvim/lazy-rocks/hererocks/bin/lua} version `5.1` not installed
+- ⚠️ WARNING Lazy won't be able to install plugins that require `luarocks`.
+  Here's what you can do:
+   - fix your `luarocks` installation
+   - disable *hererocks* with `opts.rocks.hererocks = false`
+   - disable `luarocks` support completely with `opts.rocks.enabled = false`
+
+==============================================================================
+lspconfig:                                                                  ✅
+
+- Skipped. This healthcheck is redundant with `:checkhealth vim.lsp`.
+
+==============================================================================
+luasnip:                                                                  1 ⚠️
+
+luasnip ~
+- ⚠️ WARNING For Variable/Placeholder-transformations, luasnip requires
+      the jsregexp library. See `:help |luasnip-lsp-snippets-transformations`| for advice
+  
+
+==============================================================================
+mason:                                                                    8 ⚠️
+
+mason.nvim ~
+- ✅ OK mason.nvim version v2.3.1
+- ✅ OK PATH: prepend
+- ✅ OK Providers: 
+    mason.providers.registry-api
+    mason.providers.client
+- ✅ OK neovim version >= 0.10.0
+
+mason.nvim [Registries] ~
+- ✅ OK Registry `github.com/mason-org/mason-registry version: 2026-10-07-lumpy-spider` is installed.
+- ✅ OK Registry `SynthesizedRegistrySource` is installed.
+
+mason.nvim [Core utils] ~
+- ✅ OK unzip: `UnZip 6.00 of 20 April 2009, by Info-ZIP.  Maintained by C. Spieler.  Send`
+- ✅ OK wget: `GNU Wget 1.25.0, a non-interactive network retriever.`
+- ✅ OK curl: `curl 8.22.0 (x86_64-unknown-linux-gnu) libcurl/8.22.0 OpenSSL/3.6.5 zlib/1.3.2 zstd/1.5.7 libidn2/2.3.8 libpsl/0.21.5 libssh2/1.11.1 nghttp2/1.70.0 ngtcp2/1.25.0 nghttp3/1.18.0`
+- ✅ OK gzip: `gzip 1.14`
+- ✅ OK tar: `tar (GNU tar) 1.35`
+- ✅ OK bash: `GNU bash, version 5.3.0(1)-release (x86_64-unknown-linux-gnu)`
+
+mason.nvim [Languages] ~
+- ⚠️ WARNING Go: not available
+  - ADVICE:
+    - spawn: go failed with exit code - and signal -. Could not find executable "go" in PATH.
+
+- ⚠️ WARNING luarocks: not available
+  - ADVICE:
+    - spawn: luarocks failed with exit code - and signal -. Could not find executable "luarocks" in PATH.
+
+- ⚠️ WARNING Ruby: not available
+  - ADVICE:
+    - spawn: ruby failed with exit code - and signal -. Could not find executable "ruby" in PATH.
+
+- ⚠️ WARNING RubyGem: not available
+  - ADVICE:
+    - spawn: gem failed with exit code - and signal -. Could not find executable "gem" in PATH.
+
+- ⚠️ WARNING Composer: not available
+  - ADVICE:
+    - spawn: composer failed with exit code - and signal -. Could not find executable "composer" in PATH.
+
+- ⚠️ WARNING PHP: not available
+  - ADVICE:
+    - spawn: php failed with exit code - and signal -. Could not find executable "php" in PATH.
+
+- ⚠️ WARNING javac: not available
+  - ADVICE:
+    - spawn: javac failed with exit code - and signal -. Could not find executable "javac" in PATH.
+
+- ⚠️ WARNING julia: not available
+  - ADVICE:
+    - spawn: julia failed with exit code - and signal -. Could not find executable "julia" in PATH.
+
+- ✅ OK node: `v22.22.3`
+- ✅ OK python: `Python 3.14.7`
+- ✅ OK cargo: `cargo 1.98.0`
+- ✅ OK java: `openjdk version "11.0.25" 2024-10-15`
+- ✅ OK JAVA_HOME: `openjdk version "11.0.25" 2024-10-15`
+- ✅ OK npm: `10.9.8`
+- ✅ OK pip: `pip 26.2.1 from /home/akash/Games/pokemon/PokemonEmerald/.venv/lib/python3.14/site-packages/pip (python 3.14)`
+- ✅ OK python venv: `Ok`
+
+==============================================================================
+mason-lspconfig:                                                            ✅
+
+mason-lspconfig.nvim ~
+- ✅ OK Neovim v0.11
+- ✅ OK mason.nvim v2
+
+==============================================================================
+neo-tree:                                                                   ✅
+
+Dependencies ~
+- ✅ OK nvim-lua/plenary.nvim is installed
+- ✅ OK MunifTanjim/nui.nvim is installed
+
+Optional icons ~
+- ✅ OK nvim-tree/nvim-web-devicons is installed
+
+Optional preview image support (only need one): ~
+- ✅ OK folke/snacks.nvim is installed
+- 3rd/image.nvim is not installed
+
+Optional LSP integration for commands (like copy/delete/move/etc.) ~
+- antosha417/nvim-lsp-file-operations is not installed
+
+Optional window picker (for _with_window_picker commands) ~
+- s1n7ax/nvim-window-picker is not installed
+
+Configuration ~
+- ✅ OK Configuration conforms to the neotree.Config.Base schema
+
+==============================================================================
+nvim-treesitter:                                                          1 ❌
+
+Requirements ~
+- ✅ OK Neovim was compiled with tree-sitter runtime ABI version 15 (required >=13).
+- ❌ ERROR tree-sitter-cli not found
+- ✅ OK tar 1.35.0 (/usr/bin/tar)
+- ✅ OK curl 8.22.0 (/usr/bin/curl)
+  curl 8.22.0 (x86_64-unknown-linux-gnu) libcurl/8.22.0 OpenSSL/3.6.5 zlib/1.3.2 zstd/1.5.7 libidn2/2.3.8 libpsl/0.21.5 libssh2/1.11.1 nghttp2/1.70.0 ngtcp2/1.25.0 nghttp3/1.18.0
+  Release-Date: 2026-09-02
+  Protocols: dict file ftp ftps gopher gophers http https imap imaps ipfs ipns mqtt mqtts pop3 pop3s rtsp scp sftp smtp smtps telnet tftp ws wss
+  Features: alt-svc AsynchDNS HSTS HTTP2 HTTP3 HTTPS-proxy IDN IPv6 Largefile libz PSL SSL threadsafe UnixSockets zstd
+
+OS Info ~
+- version: #1 SMP PREEMPT_DYNAMIC Fri Sep 25 20:32:01 UTC 2026
+- sysname: Linux
+- machine: x86_64
+- release: 6.18.54_1
+
+Install directory for parsers and queries ~
+- /home/akash/.local/share/nvim/site
+- ✅ OK is writable.
+- ✅ OK is in runtimepath.
+
+Installed languages     H L F I J ~
+
+  Legend: [H]ighlights, [L]ocals, [F]olds, [I]ndents, In[J]ections ~
+
+==============================================================================
+render-markdown:                                                          5 ⚠️
+
+render-markdown.nvim [versions] ~
+- ✅ OK neovim >= 0.11
+- ✅ OK tree-sitter ABI: 15
+- ✅ OK plugin: 8.13.0
+
+render-markdown.nvim [configuration] ~
+- ✅ OK valid
+
+render-markdown.nvim [tree-sitter markdown] ~
+- ✅ OK parser: installed
+- ✅ OK ABI: 15
+- ✅ OK highlights: /usr/share/nvim/runtime/queries/markdown/highlights.scm
+- ✅ OK highlighter: enabled
+
+render-markdown.nvim [tree-sitter markdown_inline] ~
+- ✅ OK parser: installed
+- ✅ OK ABI: 15
+- ✅ OK highlights: /usr/share/nvim/runtime/queries/markdown_inline/highlights.scm
+
+render-markdown.nvim [tree-sitter latex] ~
+- ⚠️ WARNING parser: not installed
+  - ADVICE:
+    - disable latex support to avoid this warning
+      require("render-markdown").setup({
+          latex = { enabled = false },
+      })
+- ⚠️ WARNING ABI: unknown
+  - ADVICE:
+    - disable latex support to avoid this warning
+      require("render-markdown").setup({
+          latex = { enabled = false },
+      })
+
+render-markdown.nvim [tree-sitter yaml] ~
+- ⚠️ WARNING parser: not installed
+  - ADVICE:
+    - disable yaml support to avoid this warning
+      require("render-markdown").setup({
+          yaml = { enabled = false },
+      })
+- ⚠️ WARNING ABI: unknown
+  - ADVICE:
+    - disable yaml support to avoid this warning
+      require("render-markdown").setup({
+          yaml = { enabled = false },
+      })
+
+render-markdown.nvim [icons] ~
+- ✅ OK using: nvim-web-devicons
+
+render-markdown.nvim [latex] ~
+- ⚠️ WARNING none installed: { "utftex", "latex2text" }
+  - ADVICE:
+    - disable latex support to avoid this warning
+      require("render-markdown").setup({
+          latex = { enabled = false },
+      })
+
+render-markdown.nvim [conflicts] ~
+- ✅ OK headlines: not installed
+- ✅ OK markview: not installed
+- ✅ OK obsidian: not installed
+
+==============================================================================
+snacks:                                                            10 ⚠️  5 ❌
+
+Snacks ~
+- ✅ OK setup called
+
+Snacks.bigfile ~
+- ✅ OK setup {enabled}
+
+Snacks.dashboard ~
+- ✅ OK setup {enabled}
+- ✅ OK setup ran
+- ⚠️ WARNING dashboard did not open: `buffer is not empty`
+- ❌ ERROR `alpha` conflicts with `Snacks.dashboard`
+
+Snacks.explorer ~
+- ⚠️ WARNING setup {disabled}
+- ✅ OK 'gio' `2.88.3`
+- ✅ OK System trash command found
+
+Snacks.image ~
+- ⚠️ WARNING setup {disabled}
+- ❌ ERROR None of the tools found: 'kitty', 'wezterm', 'ghostty'
+- ✅ OK 'magick' `Version: ImageMagick 7.1.2-31 Q16-HDRI x86_64 8309dc92a:20260903 https://imagemagick.org`
+- ✅ OK 'convert' `WARNING: The convert command is deprecated in IMv7, use "magick" instead of "convert" or "magick convert"`
+- ✅ OK `tmux` detected and supported
+- ✅ OK Terminal Dimensions:
+  - {size}: `1872` x `1980` pixels
+  - {scale}: `2.25`
+  - {cell}: `18` x `45` pixels
+- ✅ OK Available Treesitter languages:
+    `markdown_inline`, `markdown`
+- ⚠️ WARNING Missing Treesitter languages:
+    `css`, `html`, `javascript`, `latex`, `norg`, `scss`, `svelte`, `tsx`, `typst`, `vue`
+- ⚠️ WARNING Image rendering in docs with missing treesitter parsers won't work
+- ✅ OK 'gs' `10.08.0`
+- ✅ OK PDF files are supported
+- ✅ OK 'pdflatex' `pdfTeX 3.141592653-2.6-1.40.29 (TeX Live 2026/VoidLinux)`
+- ⚠️ WARNING The `latex` treesitter parser is required to render LaTeX math expressions
+- ❌ ERROR Tool not found: 'mmdc'
+- ⚠️ WARNING `mmdc` is required to render Mermaid diagrams
+- ❌ ERROR your terminal does not support the kitty graphics protocol
+- supported terminals: `kitty`, `wezterm`, `ghostty`
+
+Snacks.input ~
+- ✅ OK setup {enabled}
+- ✅ OK `vim.ui.input` is set to `Snacks.input`
+
+Snacks.lazygit ~
+- ❌ ERROR {lazygit} not installed
+
+Snacks.notifier ~
+- ✅ OK setup {enabled}
+- ✅ OK is ready
+
+Snacks.picker ~
+- ⚠️ WARNING setup {disabled}
+- ⚠️ WARNING `vim.ui.select` for `Snacks.picker` is not enabled
+- ⚠️ WARNING Missing Treesitter languages:
+    `regex`
+- ✅ OK 'git' `git version 2.55.0`
+- ✅ OK 'rg' `ripgrep 15.2.0`
+- ✅ OK `Snacks.picker.grep()` is available
+- ✅ OK 'fd' `fd 10.5.0`
+- ✅ OK `Snacks.picker.files()` is available
+- ✅ OK `Snacks.picker.explorer()` is available
+- ✅ OK `SQLite3` is available
+
+Snacks.quickfile ~
+- ✅ OK setup {enabled}
+
+Snacks.scope ~
+- ✅ OK setup {enabled}
+
+Snacks.scroll ~
+- ✅ OK setup {enabled}
+
+Snacks.statuscolumn ~
+- ✅ OK setup {enabled}
+
+Snacks.terminal ~
+- ✅ OK shell configured
+  - `vim.o.shell`: /usr/bin/zsh
+  - `parsed`: { "/usr/bin/zsh" }
+
+Snacks.toggle ~
+- ✅ OK {which-key} is installed
+
+Snacks.words ~
+- ✅ OK setup {enabled}
+
+==============================================================================
+telescope:                                                                  ✅
+
+Checking for required plugins ~
+- ✅ OK plenary installed.
+
+Checking external dependencies ~
+- ✅ OK rg: found ripgrep 15.2.0
+- ✅ OK fd: found fd 10.5.0
+
+===== Installed extensions ===== ~
+
+==============================================================================
+vim.deprecated:                                                           1 ⚠️
+
+ ~
+- ⚠️ WARNING vim.lsp.with() is deprecated. Feature was removed in Nvim 0.12
+  - ADVICE:
+    - use Pass the configuration to equivalent functions in `vim.lsp.buf` instead.
+    - stack traceback:
+        /home/akash/.config/nvim/lua/plugins/lsp.lua:11
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/loader.lua:380
+        =[C]:-1
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/util.lua:135
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/loader.lua:395
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/loader.lua:362
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/loader.lua:197
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/loader.lua:127
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/init.lua:112
+        /home/akash/.config/nvim/lua/config/lazy.lua:16
+        =[C]:-1
+        /home/akash/Tools/nvim/init.lua:7
+    - stack traceback:
+        /home/akash/.config/nvim/lua/plugins/lsp.lua:19
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/loader.lua:380
+        =[C]:-1
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/util.lua:135
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/loader.lua:395
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/loader.lua:362
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/loader.lua:197
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/loader.lua:127
+        /home/akash/.local/share/nvim/lazy/lazy.nvim/lua/lazy/init.lua:112
+        /home/akash/.config/nvim/lua/config/lazy.lua:16
+        =[C]:-1
+        /home/akash/Tools/nvim/init.lua:7
+
+==============================================================================
+vim.health:                                                               1 ❌
+
+System Info ~
+- ✅ OK Up to date (0.12.5)
+- Nvim version: `v0.12.5` 
+- Operating system: Linux 6.18.54_1
+- Terminal: tmux 3.7c
+- $TERM: foot
+
+Configuration ~
+- ✅ OK no issues found
+
+Runtime ~
+- ✅ OK $VIMRUNTIME: /usr/share/nvim/runtime
+
+Performance ~
+- ✅ OK Build type: None
+
+Remote Plugins ~
+- ✅ OK Up to date
+
+Terminal ~
+- key_backspace (kbs) terminfo entry: `key_backspace=\177`
+- key_dc (kdch1) terminfo entry: `key_dc=\E[3~`
+- $TERM_PROGRAM="tmux"
+- $COLORTERM="truecolor"
+
+tmux ~
+- ✅ OK escape-time: 0
+- ✅ OK focus-events: on
+- $TERM: foot
+- ❌ ERROR $TERM should be "screen-256color", "tmux-256color", or "tmux-direct" in tmux. Colors might look wrong.
+  - ADVICE:
+    - Set default-terminal in ~/.tmux.conf:
+      set-option -g default-terminal "screen-256color"
+    - https://neovim.io/doc/build/#building
+
+External Tools ~
+- ✅ OK ripgrep 15.2.0 (/usr/bin/rg)
+- ✅ OK vim.ui.open: handler found (xdg-open)
+- ✅ OK git version 2.55.0 (/usr/bin/git)
+- ✅ OK curl 8.22.0 (/usr/bin/curl)
+  curl 8.22.0 (x86_64-unknown-linux-gnu) libcurl/8.22.0 OpenSSL/3.6.5 zlib/1.3.2 zstd/1.5.7 libidn2/2.3.8 libpsl/0.21.5 libssh2/1.11.1 nghttp2/1.70.0 ngtcp2/1.25.0 nghttp3/1.18.0
+  Release-Date: 2026-09-02
+  Protocols: dict file ftp ftps gopher gophers http https imap imaps ipfs ipns mqtt mqtts pop3 pop3s rtsp scp sftp smtp smtps telnet tftp ws wss
+  Features: alt-svc AsynchDNS HSTS HTTP2 HTTP3 HTTPS-proxy IDN IPv6 Largefile libz PSL SSL threadsafe UnixSockets zstd
+
+==============================================================================
+vim.lsp:                                                                  3 ⚠️
+
+- LSP log level : WARN
+- Log path: /home/akash/.local/state/nvim/lsp.log
+- Log size: 1944 KB
+
+vim.lsp: Active Features ~
+- document_color
+  - Active buffers:
+
+
+vim.lsp: Active Clients ~
+- No active clients
+
+vim.lsp: Enabled Configurations ~
+- bashls:
+  - cmd: { "bash-language-server", "start" }
+  - filetypes: bash, sh
+  - root_markers: { ".git" }
+  - settings: {
+      bashIde = {
+        globPattern = "*@(.sh|.inc|.bash|.command)"
+      }
+    }
+
+- ⚠️ WARNING Unknown filetype 'c.doxygen' (Hint: filename extension != filetype).
+- ⚠️ WARNING Unknown filetype 'cpp.doxygen' (Hint: filename extension != filetype).
+- clangd:
+  - capabilities: {
+      offsetEncoding = { "utf-8", "utf-16" },
+      textDocument = {
+        completion = {
+          editsNearCursor = true
+        }
+      }
+    }
+  - cmd: { "clangd" }
+  - filetypes: c, c.doxygen, cpp, cpp.doxygen, objc, objcpp, cuda
+  - get_language_id: <function @/home/akash/.local/share/nvim/lazy/nvim-lspconfig/lsp/clangd.lua:77>
+  - on_attach: <function @/home/akash/.local/share/nvim/lazy/nvim-lspconfig/lsp/clangd.lua:95>
+  - on_init: <function @/home/akash/.local/share/nvim/lazy/nvim-lspconfig/lsp/clangd.lua:90>
+  - root_markers: { ".clangd", ".clang-tidy", ".clang-format", "compile_commands.json", "compile_flags.txt", "configure.ac", ".git" }
+
+- fortls:
+  - cmd: { "fortls", "--notify_init", "--hover_signature", "--hover_language=fortran", "--use_signature_help" }
+  - filetypes: fortran
+  - root_markers: { ".fortls", ".fortlsrc", ".fortls.json", ".git" }
+  - settings: {}
+
+- lua_ls:
+  - cmd: { "lua-language-server" }
+  - filetypes: lua
+  - root_markers: { { ".emmyrc.json", ".luarc.json", ".luarc.jsonc" }, { ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml" }, { ".git" } }
+  - settings: {
+      Lua = {
+        codeLens = {
+          enable = true
+        },
+        hint = {
+          enable = true,
+          semicolon = "Disable"
+        }
+      }
+    }
+
+- ⚠️ WARNING Unknown filetype 'markdown.mdx' (Hint: filename extension != filetype).
+- marksman:
+  - cmd: { "marksman", "server" }
+  - filetypes: markdown, markdown.mdx
+  - root_markers: { ".marksman.toml", ".git" }
+
+- pyright:
+  - cmd: { "pyright-langserver", "--stdio" }
+  - filetypes: python
+  - on_attach: <function @/home/akash/.local/share/nvim/lazy/nvim-lspconfig/lsp/pyright.lua:47>
+  - root_markers: { "pyrightconfig.json", "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile", ".git" }
+  - settings: {
+      python = {
+        analysis = {
+          autoSearchPaths = true,
+          diagnosticMode = "openFilesOnly",
+          useLibraryCodeForTypes = true
+        }
+      }
+    }
+
+- texlab:
+  - cmd: { "texlab" }
+  - filetypes: tex, plaintex, bib
+  - on_attach: <function @/home/akash/.local/share/nvim/lazy/nvim-lspconfig/lsp/texlab.lua:165>
+  - root_markers: { ".git", ".latexmkrc", "latexmkrc", ".texlabroot", "texlabroot", "Tectonic.toml" }
+  - settings: {
+      texlab = {
+        bibtexFormatter = "texlab",
+        build = {
+          args = { "-pdf", "-interaction=nonstopmode", "-synctex=1", "%f" },
+          executable = "latexmk",
+          forwardSearchAfter = false,
+          onSave = false
+        },
+        chktex = {
+          onEdit = false,
+          onOpenAndSave = false
+        },
+        diagnosticsDelay = 300,
+        formatterLineLength = 80,
+        forwardSearch = {
+          args = {}
+        },
+        latexFormatter = "latexindent",
+        latexindent = {
+          modifyLineBreaks = false
+        }
+      }
+    }
+
+
+vim.lsp: File Watcher ~
+- file watching "(workspace/didChangeWatchedFiles)" disabled on all clients
+
+vim.lsp: Position Encodings ~
+- No active clients
+
+==============================================================================
+vim.pack:                                                                   ✅
+
+vim.pack: basics ~
+- ✅ OK `vim.pack` is not used
+
+==============================================================================
+vim.provider:                                                             6 ⚠️
+
+Clipboard (optional) ~
+- ✅ OK Clipboard tool found: wl-copy
+
+Node.js provider (optional) ~
+- Node.js: 22.22.3
+- ⚠️ WARNING Missing "neovim" npm (or yarn, pnpm) package.
+  - ADVICE:
+    - Run in shell: npm install -g neovim
+    - Run in shell (if you use yarn): yarn global add neovim
+    - Run in shell (if you use pnpm): pnpm install -g neovim
+    - You may disable this provider (and warning) by adding `let g:loaded_node_provider = 0` to your init.vim
+
+Perl provider (optional) ~
+- ⚠️ WARNING "Neovim::Ext" cpan module is not installed
+  - ADVICE:
+    - See :help |provider-perl| for more information.
+    - You can disable this provider (and warning) by adding `let g:loaded_perl_provider = 0` to your init.vim
+- ⚠️ WARNING No usable perl executable found
+
+Python 3 provider (optional) ~
+- pyenv: Path: /home/akash/.pyenv/libexec/pyenv
+- pyenv: Root: /home/akash/.pyenv
+- ⚠️ WARNING No Python executable found that can `import neovim`. Using the first available executable for diagnostics.
+- ⚠️ WARNING Could not load Python :
+  /home/akash/Games/pokemon/PokemonEmerald/.venv/bin/python3 does not have the "neovim" module.
+  /home/akash/Games/pokemon/PokemonEmerald/.venv/bin/python3.14 does not have the "neovim" module.
+  python3.13 not found in search path or not executable.
+  python3.12 not found in search path or not executable.
+  /home/akash/.local/bin/python3.11 does not have the "neovim" module.
+  python3.10 not found in search path or not executable.
+  python3.9 not found in search path or not executable.
+  /home/akash/Games/pokemon/PokemonEmerald/.venv/bin/python does not have the "neovim" module.
+  - ADVICE:
+    - See :help |provider-python| for more information.
+    - You can disable this provider (and warning) by adding `let g:loaded_python3_provider = 0` to your init.vim
+- Executable: Not found
+
+Python virtualenv ~
+- $VIRTUAL_ENV is set to: /home/akash/Games/pokemon/PokemonEmerald/.venv
+- Python version: 3.14.7
+- ✅ OK $VIRTUAL_ENV provides :!python.
+
+Ruby provider (optional) ~
+- ⚠️ WARNING `ruby` and `gem` must be in $PATH.
+  - ADVICE:
+    - Install Ruby and verify that `ruby` and `gem` commands work.
+
+==============================================================================
+vim.treesitter:                                                             ✅
+
+Treesitter features ~
+- Treesitter ABI support: min 13, max 15
+- WASM parser support: false
+
+Treesitter parsers ~
+- ✅ OK Parser: c                         ABI: 15, path: /usr/share/nvim/runtime/parser/c.so
+- ✅ OK Parser: lua                       ABI: 15, path: /usr/share/nvim/runtime/parser/lua.so
+- ✅ OK Parser: markdown                  ABI: 15, path: /usr/share/nvim/runtime/parser/markdown.so
+- ✅ OK Parser: markdown_inline           ABI: 15, path: /usr/share/nvim/runtime/parser/markdown_inline.so
+- ✅ OK Parser: query                     ABI: 15, path: /usr/share/nvim/runtime/parser/query.so
+- ✅ OK Parser: vim                       ABI: 15, path: /usr/share/nvim/runtime/parser/vim.so
+- ✅ OK Parser: vimdoc                    ABI: 15, path: /usr/share/nvim/runtime/parser/vimdoc.so
+
+Treesitter queries ~
+- ✅ OK c               folds           /usr/share/nvim/runtime/queries/c
+- ✅ OK c               highlights      /usr/share/nvim/runtime/queries/c
+- ✅ OK c               injections      /usr/share/nvim/runtime/queries/c
+- ✅ OK css             images          /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/css
+- ✅ OK html            images          /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/html
+- ✅ OK javascript      images          /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/javascript
+- ✅ OK latex           images          /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/latex
+- ✅ OK lua             folds           /usr/share/nvim/runtime/queries/lua
+- ✅ OK lua             highlights      /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/lua
+- ✅ OK lua             highlights      /usr/share/nvim/runtime/queries/lua
+- ✅ OK lua             injections      /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/lua
+- ✅ OK lua             injections      /usr/share/nvim/runtime/queries/lua
+- ✅ OK lua             nvim-surround   /home/akash/.local/share/nvim/lazy/nvim-surround/queries/lua
+- ✅ OK markdown        folds           /usr/share/nvim/runtime/queries/markdown
+- ✅ OK markdown        highlights      /usr/share/nvim/runtime/queries/markdown
+- ✅ OK markdown        images          /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/markdown
+- ✅ OK markdown        injections      /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/markdown
+- ✅ OK markdown        injections      /usr/share/nvim/runtime/queries/markdown
+- ✅ OK markdown_inline highlights      /usr/share/nvim/runtime/queries/markdown_inline
+- ✅ OK markdown_inline images          /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/markdown_inline
+- ✅ OK markdown_inline injections      /usr/share/nvim/runtime/queries/markdown_inline
+- ✅ OK norg            images          /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/norg
+- ✅ OK query           folds           /usr/share/nvim/runtime/queries/query
+- ✅ OK query           highlights      /usr/share/nvim/runtime/queries/query
+- ✅ OK scss            images          /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/scss
+- ✅ OK svelte          images          /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/svelte
+- ✅ OK tsx             images          /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/tsx
+- ✅ OK typst           images          /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/typst
+- ✅ OK vim             folds           /usr/share/nvim/runtime/queries/vim
+- ✅ OK vim             highlights      /usr/share/nvim/runtime/queries/vim
+- ✅ OK vim             injections      /usr/share/nvim/runtime/queries/vim
+- ✅ OK vimdoc          highlights      /usr/share/nvim/runtime/queries/vimdoc
+- ✅ OK vimdoc          injections      /usr/share/nvim/runtime/queries/vimdoc
+- ✅ OK vue             images          /home/akash/.local/share/nvim/lazy/snacks.nvim/queries/vue
+
+==============================================================================
+which-key:                                                                4 ⚠️
+
+- ✅ OK Most of these checks are for informational purposes only.
+  WARNINGS should be treated as a warning, and don't necessarily indicate a problem with your config.
+  Please |DON'T| report these warnings as an issue.
+
+Checking your config ~
+- ⚠️ WARNING |mini.icons| is not installed
+- ✅ OK |nvim-web-devicons| is installed
+
+Checking for issues with your mappings ~
+- ✅ OK No issues reported
+
+checking for overlapping keymaps ~
+- ⚠️ WARNING In mode `n`, <gc> overlaps with <gcc>:
+  - <gc>: Toggle comment
+  - <gcc>: Toggle comment line
+- ⚠️ WARNING In mode `n`, <yS> overlaps with <ySS>:
+  - <yS>: Add a surrounding pair around a motion, on new lines (normal mode)
+  - <ySS>: Add a surrounding pair around the current line, on new lines (normal mode)
+- ⚠️ WARNING In mode `n`, <ys> overlaps with <yss>:
+  - <ys>: Add a surrounding pair around a motion (normal mode)
+  - <yss>: Add a surrounding pair around the current line (normal mode)
+- ✅ OK Overlapping keymaps are only reported for informational purposes.
+  This doesn't necessarily mean there is a problem with your config.
+
+Checking for duplicate mappings ~
+- ✅ OK No duplicate mappings found
+

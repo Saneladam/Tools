@@ -1,1 +1,1 @@
-/home/akash/Tools/tmux/dark.tmux
+/home/akash/Tools/tmux/light.tmux
