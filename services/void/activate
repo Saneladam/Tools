@@ -25,6 +25,11 @@ activate_one()
 
     service_dir="$(readlink -f "$service_dir")"
     service_name="$(basename "$service_dir")"
+
+    if [ "$service_name" = security-scan ]; then
+        "$service_dir/install"
+        return $?
+    fi
     link="${ACTIVE_DIR}/${service_name}"
 
     if [ ! -d "$ACTIVE_DIR" ]; then

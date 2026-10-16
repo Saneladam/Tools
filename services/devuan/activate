@@ -36,6 +36,13 @@ activate_one()
     service_dir="$(readlink -f "$service_dir")"
     service_name="$(basename "$service_dir")"
 
+    # This Devuan may use SysVinit, not runit. Keep the original runit path
+    # for other installations; security-scan has a dedicated SysV definition.
+    if [ "$service_name" = security-scan ] && [ "$(cat /proc/1/comm)" = init ]; then
+        "$service_dir/install"
+        return $?
+    fi
+
     if ! active_dir="$(find_active_dir)"; then
         echo "No Devuan/runit service directory was found." >&2
         echo "Checked: /var/service, /etc/service, /etc/runit/runsvdir/default" >&2

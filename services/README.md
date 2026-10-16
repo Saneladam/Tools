@@ -39,25 +39,31 @@ command to run as root.
 
 ### security-scan
 
-Defensive **local** audit only (`~/net_selfcheck.py`). Does **not** run
-`wifi_selfcheck` or any WiFi/LAN deep scan.
+La auditoría está documentada en [security/README.md](../security/README.md).
+Incluye los motores local y WiFi pasivo, con hallazgos, acciones y cobertura.
+Informes: `~/Logs/security/HOST/latest.{log,json}`. No hay escaneo activo de LAN.
 
-- **Start:** show yesterday’s report (`~/Tools/bin/security-show`)
-- **Stop (TERM/INT/HUP):** run scan and save dated report (`~/Tools/bin/security-scan`)
-- **Reports:** `~/Logs/security/YYYY-MM-DD.log`, `latest.log`, optional `yesterday` symlink
-- **Service log:** `~/Logs/security-service.log`
-
-Manual:
+En Devuan/SysVinit, `devuan/activate .../security-scan` instala un gancho de
+apagado/reinicio; requiere sudo. En XFCE se instala también el autostart de usuario:
 
 ```sh
-~/Tools/bin/security-scan       # write today’s report
-~/Tools/bin/security-show       # full yesterday report
-~/Tools/bin/security-show -m 10 # TTY/login: only WARN/FAIL, max 10 lines
+~/Tools/bin/security-session --install-desktop
+~/Tools/services/devuan/activate ~/Tools/services/devuan/security-scan
 ```
 
-Interactive login shells (bash/zsh on a real TTY or login shell) and
-`session start` call `security-show -m 10`. The runit service start still
-prints the full yesterday report into `~/Logs/security-service.log`.
+En Void, `void/activate .../security-scan` copia la definición a `/etc/sv` y la
+activa en `/var/service`; el estado de runit ya no vive dentro de Tools/Syncthing.
+Las auditorías se ejecutan sin root y el HOME se resuelve para el usuario correcto.
+La instantánea final runit/logout es best-effort; se conservan también periódicas.
+
+`security-show --once -m 8` muestra el último informe en la primera terminal
+interactiva de cada sesión (también si el informe es de hoy).
+
+## Devuan con SysVinit
+
+El servicio de seguridad se instala en `/etc/init.d/security-scan`, con enlaces
+en rc0/rc1/rc6. No se requiere systemd ni runit. El resto de definiciones runit
+se conserva para equipos que realmente usen ese init; no se convierte session-sync.
 
 ## Devuan active directories (checked in order)
 

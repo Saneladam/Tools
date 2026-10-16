@@ -1,0 +1,29 @@
+#!/bin/sh
+# Keep runit's live supervise state outside the Git/Syncthing checkout.
+set -eu
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+export PATH
+source_dir="$(dirname "$(readlink -f "$0")")"
+if [ "$(id -u)" -ne 0 ]; then
+    if sudo -n true 2>/dev/null; then
+        exec sudo "$0" "$@"
+    fi
+    printf 'Falta autorización administrativa. Ejecuta:\n  sudo %s\n' "$0" >&2
+    exit 1
+fi
+owner="${SUDO_USER:-$(stat -c %U "$source_dir")}"
+case "$owner" in root|*[!a-zA-Z0-9_-]*|'') echo 'No se pudo identificar usuario no-root.' >&2; exit 1 ;; esac
+[ "$(cat /proc/1/comm)" = runit ] || { echo 'Este instalador es para Void/runit.' >&2; exit 1; }
+target=/etc/sv/security-scan
+install -d -m 755 "$target"
+install -o root -g root -m 755 "$source_dir/run" "$target/run"
+config_temp="$(mktemp)"
+trap 'rm -f "$config_temp"' EXIT HUP INT TERM
+printf '%s\n' "$owner" >"$config_temp"
+install -o root -g root -m 644 "$config_temp" "$target/user"
+if [ -e /var/service/security-scan ] && [ ! -L /var/service/security-scan ]; then
+    echo '/var/service/security-scan existe y no es un enlace; no se sobrescribe.' >&2
+    exit 1
+fi
+ln -sfn "$target" /var/service/security-scan
+printf 'Void security-scan habilitado para %s; supervise queda en /etc/sv, no en Tools.\n' "$owner"

@@ -215,7 +215,7 @@ summary_end()
 
 security_show_yesterday()
 {
-    section "Security (ayer)"
+    section "Security (último informe)"
 
     if [ -x "$HOME/Tools/bin/security-show" ]; then
         # TTY/login-friendly: solo problemas, máx. 10 líneas

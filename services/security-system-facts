@@ -1,0 +1,62 @@
+#!/usr/bin/python3
+"""Fixed read-only root collector. Install a root-owned copy, never import Tools."""
+import json
+import os
+from pathlib import Path
+import pwd
+import shutil
+import subprocess
+import sys
+
+
+def run(argv):
+    try:
+        p = subprocess.run(argv, capture_output=True, text=True, errors="replace", timeout=2,
+                           env={"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"}, check=False)
+        return p.stdout if p.returncode == 0 else None
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+
+
+def main():
+    if os.getuid() != 0:
+        raise SystemExit("El colector necesita root; no cambia reglas ni servicios.")
+    username = sys.argv[1]
+    pwd.getpwnam(username)
+    facts = {}
+    daemon = shutil.which("sshd") or "/usr/sbin/sshd"
+    stale = []
+    try:
+        installed = Path(daemon).stat()
+        for proc in Path("/proc").glob("[0-9]*"):
+            try:
+                if (proc / "comm").read_text().strip() != "sshd":
+                    continue
+                running = (proc / "exe").stat()
+                if (running.st_dev, running.st_ino) != (installed.st_dev, installed.st_ino):
+                    stale.append(int(proc.name))
+            except OSError:
+                continue
+    except OSError:
+        pass
+    facts["sshd_stale_pids"] = stale
+    out = run([shutil.which("sshd") or "/usr/sbin/sshd", "-T", "-C", f"user={username},host=localhost,addr=192.0.2.1"])
+    if out:
+        allowed = {"permitrootlogin", "passwordauthentication", "kbdinteractiveauthentication", "permitemptypasswords", "pubkeyauthentication", "strictmodes"}
+        facts["sshd"] = {k: v for line in out.splitlines() if " " in line for k, v in [line.split(None, 1)] if k in allowed}
+    out = run([shutil.which("nft") or "/usr/sbin/nft", "-j", "list", "ruleset"])
+    if out:
+        try:
+            facts["nft"] = json.loads(out)
+        except ValueError:
+            pass
+    # Legacy iptables may coexist with an empty nft ruleset.
+    for tool in ("iptables-save", "ip6tables-save"):
+        out = run([shutil.which(tool) or "/usr/sbin/" + tool])
+        if out is not None:
+            facts[tool] = out
+    print(json.dumps(facts))
+
+
+if __name__ == "__main__":
+    main()

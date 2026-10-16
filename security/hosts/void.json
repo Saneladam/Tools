@@ -1,0 +1,13 @@
+{
+  "allowed_listeners": [
+    {"protocol": "tcp", "port": 22, "reason": "SSH entre equipos; autenticación auditada aparte"},
+    {"protocol": "tcp", "port": 22000, "reason": "Syncthing"},
+    {"protocol": "udp", "port": 22000, "reason": "Syncthing QUIC"},
+    {"protocol": "udp", "port": 21027, "reason": "Syncthing discovery"},
+    {"protocol": "udp", "port": 5353, "reason": "mDNS .local"},
+    {"protocol": "udp", "port": 68, "reason": "Cliente DHCPv4"},
+    {"protocol": "tcp", "port": 53, "address": "192.168.122.1", "reason": "DNS de libvirt observado solo en virbr0, no en WiFi"},
+    {"protocol": "udp", "port": 53, "address": "192.168.122.1", "reason": "DNS de libvirt observado solo en virbr0"},
+    {"protocol": "udp", "port": 67, "address": "0.0.0.0%virbr0", "reason": "DHCP limitado explícitamente a virbr0 de libvirt"}
+  ]
+}

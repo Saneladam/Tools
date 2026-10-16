@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+"""User-session snapshots; SIGTERM logout is best-effort, SysV handles shutdown."""
+import argparse
+import datetime as dt
+import fcntl
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+import threading
+import time
+
+from security_core import atomic_write, report_dir
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--ensure", action="store_true", help="arranca en segundo plano si hace falta")
+    p.add_argument("--install-desktop", action="store_true", help="instala autostart XDG para XFCE/Sway compatibles")
+    args = p.parse_args()
+    base = Path(__file__).resolve().parent
+    if args.install_desktop:
+        target = Path.home() / ".config/autostart/security-session.desktop"
+        command = str(base / "security-session").replace("\\", "\\\\").replace('"', '\\"').replace("%", "%%").replace("$", "\\$").replace("`", "\\`")
+        atomic_write(target, "[Desktop Entry]\nType=Application\nName=Security snapshots\n"
+                     f'Exec="{command}" --ensure\nTerminal=false\n'
+                     "Comment=Bounded local security audit; reports in ~/Logs/security\n")
+        print(f"Autostart: {target}")
+        return 0
+    root = report_dir()
+    root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    if args.ensure:
+        with (root / "session-service.log").open("a") as log:
+            subprocess.Popen([sys.executable, str(base / "security-session")],
+                             stdin=subprocess.DEVNULL, stdout=log, stderr=log,
+                             close_fds=True, start_new_session=True)
+        return 0
+    with (root / ".session.lock").open("a") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return 0
+        stopping = threading.Event()
+        for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+            signal.signal(sig, lambda *_: stopping.set())
+
+        # XDG autostart processes are not guaranteed to get TERM at XFCE logout.
+        # Observe removal of our own elogind session; never react to another SSH
+        # session closing. This is best-effort, not a shutdown inhibitor.
+        monitor = None
+        session_id = os.environ.get("XDG_SESSION_ID")
+        if session_id:
+            try:
+                monitor = subprocess.Popen(["dbus-monitor", "--system",
+                    "type='signal',interface='org.freedesktop.login1.Manager',member='SessionRemoved'"],
+                    stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+                def watch_session():
+                    for line in monitor.stdout:
+                        if line.strip() == 'string "' + session_id + '"':
+                            stopping.set()
+                            return
+                threading.Thread(target=watch_session, daemon=True).start()
+            except OSError:
+                pass
+
+        def scan(reason):
+            # A later XFCE logout must not overwrite the more complete privileged
+            # shutdown snapshot with a user-only report after services disappear.
+            closing = Path("/run/security-scan/closing")
+            if reason in ("periodic", "logout") and closing.exists() and time.time() - closing.stat().st_mtime < 120:
+                return
+            print(f"[{dt.datetime.now().astimezone().isoformat(timespec='seconds')}] scan={reason}", flush=True)
+            process = subprocess.Popen([sys.executable, str(base / "security-scan"), "--reason", reason, "--quiet"], start_new_session=True)
+            try:
+                process.wait(timeout=18)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, signal.SIGTERM)
+                try:
+                    process.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid, signal.SIGKILL)
+                    process.wait()
+                print("Análisis excedió 18 s; se conserva el último informe completo.", flush=True)
+
+        from security_core import load_json
+        # Preserve the final previous-session report for the first terminal.
+        if not load_json(root / "latest.json"):
+            scan("login")
+        try:
+            while not stopping.wait(1800):
+                scan("periodic")
+            scan("logout")
+        finally:
+            if monitor is not None:
+                monitor.terminate()
+                try:
+                    monitor.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    monitor.kill()
+                    monitor.wait()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

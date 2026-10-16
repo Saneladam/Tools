@@ -1,0 +1,10 @@
+{
+  "allowed_listeners": [
+    {"protocol": "udp", "port": 68, "reason": "Recepción del cliente DHCPv4; no equivale a ofrecer un servidor DHCP"},
+    {"protocol": "tcp", "port": 22, "reason": "SSH usado entre equipos; su autenticación se audita aparte"},
+    {"protocol": "tcp", "port": 22000, "reason": "Sincronización Syncthing configurada por el usuario"},
+    {"protocol": "udp", "port": 22000, "reason": "Transporte QUIC de Syncthing"},
+    {"protocol": "udp", "port": 21027, "reason": "Descubrimiento local Syncthing"},
+    {"protocol": "udp", "port": 5353, "reason": "mDNS para resolver void.local/devuan.local"}
+  ]
+}

@@ -135,21 +135,12 @@ autoload -Uz compinit && compinit -C
 # <<< grok installer <<<
 
 ###############################################################################
-# Security briefing (yesterday, minimal) — login / TTY
+# Security: first interactive terminal of each graphical / TTY / SSH session.
 ###############################################################################
-if [[ -z "${SECURITY_SHOW_DONE:-}" ]] && [[ -x "$HOME/Tools/bin/security-show" ]]; then
-    _sec_tty="$(tty 2>/dev/null || true)"
-    _sec_login=0
-    if [[ -o login ]]; then
-        _sec_login=1
+if [[ -o interactive && -t 1 && -x "$HOME/Tools/bin/security-show" ]]; then
+    "$HOME/Tools/bin/security-show" --once -m 8 || true
+    # TTY login before Sway: XFCE uses the XDG autostart installed separately.
+    if [[ -o login && -z "${SSH_CONNECTION:-}" && -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" && -x "$HOME/Tools/bin/security-session" ]]; then
+        "$HOME/Tools/bin/security-session" --ensure
     fi
-    case "$_sec_tty" in
-        /dev/tty[0-9]*|/dev/tty[0-9][0-9]*) _sec_login=1 ;;
-    esac
-    if [[ "$_sec_login" -eq 1 ]]; then
-        export SECURITY_SHOW_DONE=1
-        "$HOME/Tools/bin/security-show" -m 10 || true
-    fi
-    unset _sec_tty _sec_login
 fi
-

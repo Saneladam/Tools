@@ -1,38 +1,114 @@
-#!/bin/sh
-# Defensive local security scan → ~/Logs/security/YYYY-MM-DD.log
-# Uses only ~/net_selfcheck.py (no WiFi/LAN deep scan).
+#!/usr/bin/env python3
+"""Run bounded local/WiFi audits, atomically save host-specific reports in ~/Logs."""
+from __future__ import annotations
 
-set -u
+import argparse
+from concurrent.futures import ThreadPoolExecutor
+import datetime as dt
+import fcntl
+import importlib.util
+import json
+import os
+from pathlib import Path
+import sys
+import time
 
-REPORT_DIR="${HOME}/Logs/security"
-NET_SELFCHECK="${HOME}/Tools/bin/net_selfcheck.py"
-mkdir -p "$REPORT_DIR"
+from security_core import atomic_write, exit_status, host_name, load_json, load_policy, report_dir, text_report
 
-today="$(date +%F)"
-report="${REPORT_DIR}/${today}.log"
-latest="${REPORT_DIR}/latest.log"
 
-if [ ! -x "$NET_SELFCHECK" ]; then
-    printf 'security-scan: no ejecutable: %s\n' "$NET_SELFCHECK" >&2
-    exit 127
-fi
+def engine(filename):
+    spec = importlib.util.spec_from_file_location(filename[:-3], Path(__file__).resolve().parent / filename)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
-{
-    printf '=== Informe de seguridad %s ===\n' "$(date '+%F %H:%M:%S %z')"
-    printf 'Host: %s\n' "$(hostname)"
-    printf 'Herramienta: net_selfcheck.py (auditoría defensiva local)\n'
-    printf '\n'
-    "$NET_SELFCHECK"
-} >"$report" 2>&1
-rc=$?
 
-cp -f "$report" "$latest"
+def compare(previous, current):
+    if not previous or previous.get("host") != current["host"]:
+        return {"baseline": "primera observación; no significa estado seguro"}
+    def keys(report):
+        return {(r["protocol"], r["address"], r["port"]) for r in report.get("inventory", {}).get("local", {}).get("listeners", [])}
+    return {"new_listeners": sorted(keys(current) - keys(previous)),
+            "resolved_findings": sorted({f["id"] for f in previous.get("findings", [])} - {f["id"] for f in current["findings"]})}
 
-# yesterday symlink → informe del día anterior si existe
-yest="$(date -d yesterday +%F 2>/dev/null || true)"
-if [ -n "$yest" ] && [ -f "${REPORT_DIR}/${yest}.log" ]; then
-    ln -sfn "${yest}.log" "${REPORT_DIR}/yesterday"
-fi
 
-printf 'security-scan: guardado %s (rc=%s)\n' "$report" "$rc" >&2
-exit "$rc"
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--reason", default="manual", choices=("manual", "login", "logout", "shutdown", "periodic", "service-start", "test"))
+    p.add_argument("--system-facts-stdin", action="store_true", help="datos acotados del colector privilegiado, no órdenes")
+    p.add_argument("--quiet", action="store_true")
+    args = p.parse_args()
+    os.umask(0o077)
+    root = report_dir()
+    root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    # Lock is per host; opening simultaneous terminals cannot duplicate a scan.
+    with (root / ".scan.lock").open("a") as lock:
+        lock_deadline = time.monotonic() + (5 if args.reason == "shutdown" else 0)
+        while True:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                if time.monotonic() >= lock_deadline:
+                    if not args.quiet:
+                        print("security-scan: ya hay un análisis en marcha; no se duplica.")
+                    return 3 if args.reason == "shutdown" else 0
+                time.sleep(0.1)
+        facts = {}
+        if args.system_facts_stdin:
+            try:
+                facts = json.loads(sys.stdin.read(2_000_000))
+            except (ValueError, OSError) as exc:
+                facts = {"collector_error": str(exc)}
+        policy = load_policy()
+        modules = [engine("net_selfcheck.py"), engine("wifi_selfcheck.py")]
+        started = time.monotonic()
+        results = []
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            futures = [pool.submit(m.audit, policy, facts) for m in modules]
+            for module, future in zip(modules, futures):
+                try:
+                    results.append(future.result())
+                except Exception as exc:
+                    results.append(dict(engine=module.__name__, findings=[], checked=[], inventory={},
+                                        skipped=[dict(check=module.__name__, reason=f"Motor falló: {exc}")]))
+        now = dt.datetime.now().astimezone()
+        report = dict(schema=1, host=host_name(), user=os.getuid(), reason=args.reason,
+                      finished_at=now.isoformat(timespec="seconds"),
+                      duration_seconds=round(time.monotonic() - started, 3),
+                      findings=[f for r in results for f in r["findings"]],
+                      checked=[f"{r['engine']}: {c}" for r in results for c in r["checked"]],
+                      skipped=[s for r in results for s in r["skipped"]],
+                      inventory={r["engine"]: r["inventory"] for r in results})
+        if facts.get("collector_error"):
+            report["skipped"].append(dict(check="Colector privilegiado", reason=facts["collector_error"]))
+        previous = load_json(root / "latest.json")
+        report["changes"] = compare(previous, report)
+        # A changed gateway MAC is a review signal, not proof of ARP poisoning.
+        old_wifi = previous.get("inventory", {}).get("wifi", {}).get("wifi", []) if previous else []
+        new_wifi = report["inventory"].get("wifi", {}).get("wifi", [])
+        if isinstance(old_wifi, list) and isinstance(new_wifi, list):
+            old = {(r.get("connection_uuid"), r.get("gateway")): r.get("gateway_mac") for r in old_wifi if r.get("connection_uuid")}
+            for r in new_wifi:
+                before = old.get((r.get("connection_uuid"), r.get("gateway")))
+                if before and r.get("gateway_mac") and before != r["gateway_mac"]:
+                    report["findings"].append(dict(level="WARN", id="gateway-mac-change", title="Cambió la MAC del gateway en el mismo perfil WiFi",
+                        evidence=f"{r['gateway']}: {before} -> {r['gateway_mac']}", action="Comprueba cambios de router/mesh/alta disponibilidad; no demuestra por sí solo suplantación ARP."))
+        encoded = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
+        rendered = text_report(report)
+        stamp = now.strftime("%Y-%m-%d_%H%M%S_%f")
+        atomic_write(root / (stamp + ".json"), encoded)
+        atomic_write(root / (stamp + ".log"), rendered)
+        atomic_write(root / (now.strftime("%Y-%m-%d") + ".log"), rendered)
+        atomic_write(root / "latest.json", encoded)
+        atomic_write(root / "latest.log", rendered)
+        # Compatibility for older session scripts. Selection always uses host/latest.
+        atomic_write(root.parent / "latest.log", rendered)
+        if not args.quiet:
+            print(rendered, end="")
+            print(f"Informe: {root / 'latest.log'}")
+        return exit_status(report)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
