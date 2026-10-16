@@ -5,7 +5,7 @@
 set -u
 
 REPORT_DIR="${HOME}/Logs/security"
-NET_SELFCHECK="${HOME}/net_selfcheck.py"
+NET_SELFCHECK="${HOME}/Tools/bin/net_selfcheck.py"
 mkdir -p "$REPORT_DIR"
 
 today="$(date +%F)"
