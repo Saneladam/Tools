@@ -1,0 +1,24 @@
+
+# ============================================================
+# ~/.gnuplot -- workflow academico
+# Devuan Linux
+# ============================================================
+
+set terminal x11
+
+set macros
+
+# ---------- Plantilla visual academica ----------
+scientific = "set encoding utf8; set border linewidth 0.9; set tics out nomirror scale 0.65; set grid back lc rgb '#dddddd' lw 0.5; set zeroaxis lc rgb '#888888' lw 0.7; set key top right spacing 1.15; set xlabel font 'Liberation Serif,12'; set ylabel font 'Liberation Serif,12'; set title font 'Liberation Serif,12'; set key font 'Liberation Serif,10'; set tics font 'Liberation Serif,10'; set lmargin 9; set bmargin 4; set style line 1 lc rgb '#0072B2' lw 1.5; set style line 2 lc rgb '#D55E00' lw 1.5 dt 2; set style line 3 lc rgb '#009E73' lw 1.5 dt 3; set style line 4 lc rgb '#CC79A7' lw 1.5 dt 4"
+
+# ---------- Exportacion a PDF ----------
+# Antes de exportar, define:
+# paper_title = "Mi figura"
+# paper_file  = "mi_figura.pdf"
+
+paperplot = "set term push; set term pdfcairo enhanced color font 'Liberation Serif,12' linewidth 1.0 size 12cm,8cm; set output paper_file; replot; unset output; set term pop; replot"
+
+# ---------- Atajos adicionales ----------
+# Ejecuta @scientific para aplicar el estilo.
+# Ejecuta @paperplot para exportar y volver a la ventana.
+
